@@ -48,16 +48,20 @@
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
 		<h3>What does it mean Mathematically to be in a triangle?</h3>
-		To begin with rasterization, the most important question to know whether a pixel should be colored or not is if a point is inside or outside a triangle. To do this, take the cross-product between each vertex A to B, B to C, and C to A and observe the signage. 
+		To begin with rasterization, the most important question to know whether a pixel should be colored or not is if a point is inside or outside a triangle. To do this, take the cross-product between each vertex A to B, B to C, and C to A and observe the signage.
+		<br>
 		<code> 
 		float AB = (p.x - A.x)*(B.y-A.y)-(p.y-A.y)*(B.x-A.x);
 		float BC = (p.x - B.x)*(C.y-B.y)-(p.y-B.y)*(C.x-B.x);
 		float CA = (p.x - C.x)*(A.y-C.y)-(p.y-C.y)*(A.x-C.x);
 		</code>
+		<br>
 		If the triangle is counterclockwise and all cross-products are >= 0 then the point is within, if clockwise and all cross-products are <=0 then the point is within. 
-		
+		<br>
 		But what makes makes a triangle "clockwise" or "counterclockwise"? It's not something you can easily visually see, it's determined by the order in which the vertices are listed. If the vertices are listed 1s to 2nd to 3rd then the triangle is clockwise else counter-clockwise. To do this in code you can find the signed area of the triangle using this formula:
+			<br>
 		<code>(((B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x))</code>
+			<br>
 		If this area is positive it's counterclockwise, if negative it's clockwise. However, we aren't using standard coordinates where (0,0) is the bottom left, instead we use the convention that (0,0) is the top left! Meaning we need to reverse this logic, if the area is positive it is clockwise, and if negative counterclockwise.
 		<figure>
 			<img src="P1 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
