@@ -151,11 +151,13 @@ An example of where low discrepancy beat out grid sampling was at sampling rate 
 </div>
 	
 <h2 id="section3">Task 3: Transforms</h2>
-
+[TODO - ADD MODIFIED ROBOT]
 <h3>Extra Credit</h3>
+The extra GUI feature added was the ability to move the robot using the arrow keys seen below. To accomplish this <code>DrawRend::redraw()</code> was modified, specifically the <code>svg.draw</code> call. The second parameter was a homogeneous matrix multiply between <code>ndc_to_screen</code> and <code>svg_to_ndc</code>. A translation matrix, using the <code>translate</code> function, was interjected between the multiplication with the params of <code>translate_x</code> and <code>translate_y</code>. These translate members were initialized to 0 to have no initial effect but when the arrow keys are pressed they would be nudged by a <code>speed</code> factor. This factor was very small like 0.01 because normalized device coordinates (NDC) ranges from [-1, 1].
+
 <figure>
 	<img src="P3 Extra Credit.gif" alt="P3 Extra Credit Animation" style="width:50%"/>
-	<figcaption>Gif of moving stick figure.</figcaption>
+	<figcaption>Gif of moving robot. (TA please view on website)</figcaption>
 </figure>
 	
 <h2 id="section4">Task 4: Barycentric coordinates</h2>
