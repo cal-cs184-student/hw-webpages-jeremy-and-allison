@@ -1,198 +1,219 @@
 <html>
-	<head>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-		<style>
-			h1 {
-				text-align: center;
-			}
+<head>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+	h1 {
+		text-align: center;
+	}
 
-			.container {
-				margin: 0 auto;
-				padding: 60px 20%;
-			}
+	.container {
+		margin: 0 auto;
+		padding: 60px 20%;
+	}
 
-			figure {
-				text-align: center;
-			}
+	figure {
+		text-align: center;
+	}
 
-			img {
-				display: inline-block;
-			}
+	img {
+		display: inline-block;
+	}
 
-			body {
-				font-family: 'Inter', sans-serif;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
-		<div style="text-align: center;">Names: Jeremy Fischer and Allison Dana</div>
-		<div><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a><div>
+	body {
+		font-family: 'Inter', sans-serif;
+	}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
+<div style="text-align: center;">Names: Jeremy Fischer and Allison Dana</div>
+<div><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a><div>
 
-		<br>
+<br>
 
-		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html">https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html</a>
-		
-		<br>
+Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html">https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html</a>
 
-		Link to GitHub repository:<a href="https://github.com/cal-cs184-student/sp25-hw1-jeremy-allison">https://github.com/cal-cs184-student/sp25-hw1-jeremy-allison</a>
+<br>
 
-		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
+Link to GitHub repository:<a href="https://github.com/cal-cs184-student/sp25-hw1-jeremy-allison">https://github.com/cal-cs184-student/sp25-hw1-jeremy-allison</a>
 
-		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+<figure>
+	<img src="lion.jpg" alt="Lion" style="width:50%"/>
+	<figcaption>You can add images with captions!</figcaption>
+</figure>
 
-		<h2 id="section1">Task 1: Drawing Single-Color Triangles</h2>
-		<h3>What does it mean Mathematically to be in a triangle?</h3>
-		To begin with rasterization, the most important question to know whether a pixel should be colored or not is if a point is inside or outside a triangle. To do this, take the cross-product between each vertex A to B, B to C, and C to A and observe the signage.
-		<br><br>
-		<code> 
-		float AB = (p.x - A.x)*(B.y-A.y)-(p.y-A.y)*(B.x-A.x);<br>
-		float BC = (p.x - B.x)*(C.y-B.y)-(p.y-B.y)*(C.x-B.x);<br>
-		float CA = (p.x - C.x)*(A.y-C.y)-(p.y-C.y)*(A.x-C.x);<br>
-		</code>
-		<br>
-		If the triangle is counterclockwise and all cross-products are >= 0 then the point is within, if clockwise and all cross-products are <=0 then the point is within. 
-		<br><br>
-		But what makes makes a triangle "clockwise" or "counterclockwise"? It's not something you can easily visually see, it's determined by the order in which the vertices are listed. If the vertices are listed 1st to 2nd to 3rd then the triangle is clockwise else counter-clockwise. To do this in code you can find the signed area of the triangle using this formula:
-		<br><br>
-		<code>float signedArea = ((B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x))</code>
-		<br><br>
-		If this area is positive it's counterclockwise, if negative it's clockwise. However, we aren't using standard coordinates where (0,0) is the bottom left, instead we use the convention that (0,0) is the top left! Meaning we need to reverse this logic, if the area is positive it is clockwise, and if negative counterclockwise.
-		<br>
-		To check an actual pixel (at sampling rate 1) an offset is needed to check the center of the pixel by adding 1/2 to the x and y. For example, if you were checking pixel (10, 10) you would check if (10.5, 10.5) was inside the triangle.
-		<h3>Looping Strategies</h3>
-		Now that a point can be determined in or out of a triangle, a looping algorithm is needed to efficiently check pixels.
-		<h4>Naive</h4>
-		A straightforward approach is to check every single pixel in the image by using a double for loop. It produces the correct result but is horribly slow.
-		<br>
-		<figure>
-			<img src="P1 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
-			<figcaption>(Example of aliasing, the pink triangle has a gap. This will be addressed in task 2.)</figcaption>
-		</figure>
-		<h4>Bounding Box</h4>
-		A smarter approach is to notice a box could be drawn around the triangle's vertices, shrinking the area of pixels that need to be checked. The algorithm is straightforward too, find the min_x, min_y, max_x, max_y of the vertices and clamp them to the screen width and length. Then double loop over these min and max, resulting in tremendous speedup and the default method moving forward.
-		<h4>Incremental Triangle Traversal (Top Down) - <b>Extra Credit</b></h4>
-		A different approach is to start at one of the vertices and line by line fill in the triangle, ignoring much of the wasteful checks outside the triangle in the bounding box. This can be a few different ways; left-to-right/right-to-left filling in columns or top-to-bottom/bottom-to-top filling in rows. Top-to-bottom was arbitrarily chosen and implemented.
-		<br><br>
-		To implement, the topmost vertice is used to begin at, going horizontally line by line until the bottom vertice is reached. To figure out where the horizontal line begins and ends the slopes of each edge are calculated before the looping begins. The current y level can be multiplied by the slope and added to the vertex's x to get the left/right (starting/end) points. Then loops through this horizontal line filling the sample_buffer with the triangle color.
-		<br><br>
-		To check the speed difference, <code>DrawRend::redraw()</code> was modified to include a high-resolution clock that starts before and ends after the <code>svg.draw()</code> call. Specific speed-up is hardware dependent, but on Jeremy's laptop rasterizing basic_image_5 using the bounding box (~2500 microseconds) vs. incremential triangle traversal (~200 microseconds) is a 10x difference! This might seem unintuitive at first; why a 10x speedup when surely you are not checking x10 fewer pixels? Although fewer pixels are looped over, there is no longer a need to check if the point is in the triangle saving many multiplications!
-		<br><br>
-		<i>Note: To enable incremental traversal in our code, press the <code>'I'</code> key.</i>
-					
-		<h2 id="section2">Task 2: Antialiasing by Supersampling</h2>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="P2 Sample 1.png" width="400px"/>
-				  <figcaption>Supersampling 1</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="P2 Sample 4.png" width="400px"/>
-				  <figcaption>Supersampling 4</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="P2 Sample 9.png" width="400px"/>
-				  <figcaption>Supersampling 9</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="P2 Sample 16.png" width="400px"/>
-				  <figcaption>Supersampling 16</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
+<h2>Overview</h2>
+Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+
+<h2 id="section1">Task 1: Drawing Single-Color Triangles</h2>
+<h3>What does it mean mathematically to be in a triangle?</h3>
+To begin with rasterization, the most important question to know whether a pixel should be colored or not is if a point is inside or outside a triangle. To do this, take the cross-product between each vertex A to B, B to C, and C to A and observe the signage.
+<br><br>
+<code> 
+float AB = (p.x - A.x)*(B.y-A.y)-(p.y-A.y)*(B.x-A.x);<br>
+float BC = (p.x - B.x)*(C.y-B.y)-(p.y-B.y)*(C.x-B.x);<br>
+float CA = (p.x - C.x)*(A.y-C.y)-(p.y-C.y)*(A.x-C.x);<br>
+</code>
+<br>
+If the triangle is counterclockwise and all cross-products are >= 0 then the point is within, if clockwise and all cross-products are <=0 then the point is within. 
+<br><br>
+But what makes makes a triangle "clockwise" or "counterclockwise"? It's not something you can easily visually see, it's determined by the order in which the vertices are listed. If the vertices are listed 1st to 2nd to 3rd then the triangle is clockwise else counter-clockwise. To do this in code you can find the signed area of the triangle using this formula:
+<br><br>
+<code>float signedArea = ((B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x))</code>
+<br><br>
+If this area is positive it's counterclockwise, if negative it's clockwise. However, we aren't using standard coordinates where (0,0) is the bottom left, instead we use the convention that (0,0) is the top left! Meaning we need to reverse this logic, if the area is positive it is clockwise, and if negative counterclockwise.
+<br><br>
+To check an actual pixel (at sampling rate 1) an offset is needed to check the center of the pixel by adding 1/2 to the x and y. For example, if you were checking pixel (10, 10) you would check if (10.5, 10.5) was inside the triangle.
+<h3>Looping Strategies</h3>
+Now that a point can be determined in or out of a triangle, a looping algorithm is needed to efficiently check pixels.
+<h4>Naive</h4>
+A straightforward approach is to check every single pixel in the image by using a double for loop. It produces the correct result but is horribly slow.
+<br>
+<figure>
+	<img src="P1 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
+	<figcaption>(Example of aliasing, the pink triangle has a gap. This will be addressed in task 2.)</figcaption>
+</figure>
+<h4>Bounding Box</h4>
+A smarter approach is to notice a box could be drawn around the triangle's vertices, shrinking the area of pixels that need to be checked. The algorithm is straightforward too, find the min_x, min_y, max_x, max_y of the vertices and clamp them to the screen width and length. Then double loop over these min and max, resulting in tremendous speedup and the default method moving forward.
+<h4>Incremental Triangle Traversal (Top Down) - <b>Extra Credit</b></h4>
+A different approach is to start at one of the vertices and line by line fill in the triangle, ignoring much of the wasteful checks outside the triangle in the bounding box. This can be a few different ways; left-to-right/right-to-left filling in columns or top-to-bottom/bottom-to-top filling in rows. Top-to-bottom was arbitrarily chosen and implemented.
+<br><br>
+To implement, the topmost vertice is used to begin at, going horizontally line by line until the bottom vertice is reached. To figure out where the horizontal line begins and ends the slopes of each edge are calculated before the looping begins. The current y level can be multiplied by the slope and added to the vertex's x to get the left/right (starting/end) points. Then loops through this horizontal line filling the sample_buffer with the triangle color.
+<br><br>
+To check the speed difference, <code>DrawRend::redraw()</code> was modified to include a high-resolution clock that starts before and ends after the <code>svg.draw()</code> call. Specific speed-up is hardware dependent, but on Jeremy's laptop rasterizing basic_image_5 using the bounding box (~2500 microseconds) vs. incremential triangle traversal (~200 microseconds) is a 10x difference! This might seem unintuitive at first; why a 10x speedup when surely you are not checking x10 fewer pixels? Although fewer pixels are looped over, there is no longer a need to check if the point is in the triangle saving many multiplications!
+<br><br>
+<i>Note: To enable incremental traversal in our code, press the <code>'I'</code> key.</i>
 			
-		<h3>Extra Credit</h3>
+<h2 id="section2">Task 2: Antialiasing by Supersampling</h2>
 
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="P2 Extra Credit Grid SS4.png" width="400px"/>
-				  <figcaption>Grid Supersampling 4</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="P2 Extra Credit LowD SS4.png" width="400px"/>
-				  <figcaption>Low Discrepancy (Hammersley 2D) Sample Rate 4</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-			
-		<h2 id="section3">Task 3: Transforms</h2>
-		
-		<h3>Extra Credit</h3>
-		<figure>
-			<img src="P3 Extra Credit.gif" alt="P3 Extra Credit Animation" style="width:50%"/>
-			<figcaption>Gif of moving stick figure.</figcaption>
-		</figure>
-			
-		<h2 id="section4">Task 4: Barycentric coordinates</h2>
-		<figure>
-			<img src="P4 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
-		</figure>
+A single sample can cause aliasing problems as seen in task 1 with a noticeable gap in the pink triangle. Additionally, nasty jaggies can be seen on the edges of triangles which need to be smoothed out. To solve this a technique of supersampling can be employed.
 
-		<figure>
-			<img src="P4 Pic2.png" alt="P3 Extra Credit Animation" style="width:50%"/>
-		</figure>
-			
-		<h2 id="section5">Task 5: "Pixel sampling" for texture mapping</h2>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="P5 Nearest SS1.png" width="400px"/>
-				  <figcaption>Nearest Supersampling 1</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="P5 Nearest SS16.png" width="400px"/>
-				  <figcaption>Nearest Supersampling 16</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="P5 Bilinear SS1.png" width="400px"/>
-				  <figcaption>Bilinear Supersampling 1</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="P5 Bilinear SS16.png" width="400px"/>
-				  <figcaption>Bilinear Supersampling 16</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-			
-		<h2 id="section6">Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
+<h3>Supersampling Algorithm</h3>
+Before sampling was done in the middle of the pixel, but with a higher number of samples, a grid structure is used. For each pixel sampled, two for loops iterated over the grid checking if the sample is within the triangle, if so (and with the proper index offset) the sample_buffer is set with the color. Samples not in the triangle are left as the default white color. Later when the colors are averaged, if all samples were in the triangle the color of the pixel would simply be the color, however, if not all the samples were in the triangle a nice average faded color would be assigned to the pixel.
 
-		<h3>Extra Credit</h3>
-		TODO
-			
-		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		
-		<h2>References</h2>
-		http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
-		
-		<h2>Additional Notes (please remove)</h2>
-			
+<h3>Modification to Pipeline</h3>
+With additional samplings, the sample_buffer needed to be resized to accompany the new data. In the setters <code>RasterizerImp::set_sample_rate</code> and <code>RasterizerImp::set_framebuffer_target</code> resize was changed to multiply by sample_rate, as each pixel now has 'sample_rate' number more data.
+<br><br>
+The <code>RasterizerImp::resolve_to_framebuffer</code> was modified as now there is 'sample_rate' number of samples to accumulate into one pixel. To accumulate, simply average the RGB between all the samples and insert the final color into the frame buffer. 
+<br><br>
+A slight change to <code>RasterizerImp::fill_pixel</code> was needed. Before the code simply inserted the color into the sample_buffer, but this didn't account for the sample_rate size increase. To fix this, insert 'sample_rate' number of color data into the sample_buffer.
+
+<h3>Result and Utility</h3>
+Using supersampling can clearly fix both jaggies, alias gaps, and other aliasing problems as seen in the image grid of various supersampling below:
+<br>
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="P2 Sample 1.png" width="400px"/>
+			<figcaption>Supersampling 1</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P2 Sample 4.png" width="400px"/>
+			<figcaption>Supersampling 4</figcaption>
+		</td>
+		</tr>
+		<tr>
+		<td style="text-align: center;">
+			<img src="P2 Sample 9.png" width="400px"/>
+			<figcaption>Supersampling 9</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P2 Sample 16.png" width="400px"/>
+			<figcaption>Supersampling 16</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+<br>
+The gap problem is solved as more of the pixel is uniformly sampled reducing the chance of a pixel being completely missed. Jaggies are solved as the nice fade helps reduce the sudden drop-off in color. The results are great but the additional sampling can take a toll on computation exponentially!
+	
+<h3>Extra Credit - Hammersley's 2D Low Discrepancy Sampling</h3>
+The idea of low discrepancy sampling is to have a better pattern of sampling than a ridged grid. If you imagine a 4x4 grid, you could imagine missed sampling if a line or thin triangle went between the grid or was directly left/right of the grid. Hemmersley's method was implemented, <a href="http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html">sourced here</a>, which produced a 2D vector to be added to the pixel's center to get the sampling location. This process was repeated in a loop 'sample_rate' number of times.
+<br><br>
+An example of where low discrepancy beat out grid sampling was at sampling rate 4 of the pink triangle. With a more uniform sampling the Hammersley succesfully had no gaps in the triangle whereas the grid pattern still struggled. At higher sampling rates there is not much of a difference, but to get better quality sampling at a lower rate saves and order of magnitude of computation!
+<br>
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="P2 Extra Credit Grid SS4.png" width="400px"/>
+			<figcaption>Grid Supersampling 4</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P2 Extra Credit LowD SS4.png" width="400px"/>
+			<figcaption>Low Discrepancy (Hammersley 2D) Sample Rate 4</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+	
+<h2 id="section3">Task 3: Transforms</h2>
+
+<h3>Extra Credit</h3>
+<figure>
+	<img src="P3 Extra Credit.gif" alt="P3 Extra Credit Animation" style="width:50%"/>
+	<figcaption>Gif of moving stick figure.</figcaption>
+</figure>
+	
+<h2 id="section4">Task 4: Barycentric coordinates</h2>
+<figure>
+	<img src="P4 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
+</figure>
+
+<figure>
+	<img src="P4 Pic2.png" alt="P3 Extra Credit Animation" style="width:50%"/>
+</figure>
+	
+<h2 id="section5">Task 5: "Pixel sampling" for texture mapping</h2>
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="P5 Nearest SS1.png" width="400px"/>
+			<figcaption>Nearest Supersampling 1</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P5 Nearest SS16.png" width="400px"/>
+			<figcaption>Nearest Supersampling 16</figcaption>
+		</td>
+		</tr>
+		<tr>
+		<td style="text-align: center;">
+			<img src="P5 Bilinear SS1.png" width="400px"/>
+			<figcaption>Bilinear Supersampling 1</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P5 Bilinear SS16.png" width="400px"/>
+			<figcaption>Bilinear Supersampling 16</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+	
+<h2 id="section6">Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
+
+<h3>Extra Credit</h3>
+TODO
+	
+<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
+
+<h2>References</h2>
+http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+
+<h2>Additional Notes (please remove)</h2>
+	
+<ul>
+	<li>You can also add code if you'd like as so: <code>code code code</code></li>
+	<li>If you'd like to add math equations, 
 		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
+			<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
+			<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
 		</ul>
-		</div>
-	</body>
+	</li>
+</ul>
+</div>
+</body>
 </html>
