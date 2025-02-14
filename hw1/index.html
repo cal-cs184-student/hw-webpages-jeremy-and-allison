@@ -29,6 +29,7 @@
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
 		<div style="text-align: center;">Names: Jeremy Fischer and Allison Dana</div>
+		<div><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a><div>
 
 		<br>
 
@@ -46,31 +47,46 @@
 		<h2>Overview</h2>
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
-		<h2>Task 1: Drawing Single-Color Triangles</h2>
+		<h2 id="section1">Task 1: Drawing Single-Color Triangles</h2>
 		<h3>What does it mean Mathematically to be in a triangle?</h3>
 		To begin with rasterization, the most important question to know whether a pixel should be colored or not is if a point is inside or outside a triangle. To do this, take the cross-product between each vertex A to B, B to C, and C to A and observe the signage.
-		<br>
+		<br><br>
 		<code> 
-		float AB = (p.x - A.x)*(B.y-A.y)-(p.y-A.y)*(B.x-A.x);
-		float BC = (p.x - B.x)*(C.y-B.y)-(p.y-B.y)*(C.x-B.x);
-		float CA = (p.x - C.x)*(A.y-C.y)-(p.y-C.y)*(A.x-C.x);
+		float AB = (p.x - A.x)*(B.y-A.y)-(p.y-A.y)*(B.x-A.x);<br>
+		float BC = (p.x - B.x)*(C.y-B.y)-(p.y-B.y)*(C.x-B.x);<br>
+		float CA = (p.x - C.x)*(A.y-C.y)-(p.y-C.y)*(A.x-C.x);<br>
 		</code>
 		<br>
 		If the triangle is counterclockwise and all cross-products are >= 0 then the point is within, if clockwise and all cross-products are <=0 then the point is within. 
-		<br>
-		But what makes makes a triangle "clockwise" or "counterclockwise"? It's not something you can easily visually see, it's determined by the order in which the vertices are listed. If the vertices are listed 1s to 2nd to 3rd then the triangle is clockwise else counter-clockwise. To do this in code you can find the signed area of the triangle using this formula:
-			<br>
-		<code>(((B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x))</code>
-			<br>
+		<br><br>
+		But what makes makes a triangle "clockwise" or "counterclockwise"? It's not something you can easily visually see, it's determined by the order in which the vertices are listed. If the vertices are listed 1st to 2nd to 3rd then the triangle is clockwise else counter-clockwise. To do this in code you can find the signed area of the triangle using this formula:
+		<br><br>
+		<code>float signedArea = ((B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x))</code>
+		<br><br>
 		If this area is positive it's counterclockwise, if negative it's clockwise. However, we aren't using standard coordinates where (0,0) is the bottom left, instead we use the convention that (0,0) is the top left! Meaning we need to reverse this logic, if the area is positive it is clockwise, and if negative counterclockwise.
+		<br>
+		To check an actual pixel (at sampling rate 1) an offset is needed to check the center of the pixel by adding 1/2 to the x and y. For example, if you were checking pixel (10, 10) you would check if (10.5, 10.5) was inside the triangle.
+		<h3>Looping Strategies</h3>
+		Now that a point can be determined in or out of a triangle, a looping algorithm is needed to efficiently check pixels.
+		<h4>Naive</h4>
+		A straightforward approach is to check every single pixel in the image by using a double for loop. It produces the correct result but is horribly slow.
+		<br>
 		<figure>
 			<img src="P1 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
-			<figcaption>Example of aliasing. Triangle has a gap</figcaption>
+			<figcaption>(Example of aliasing, the pink triangle has a gap. This will be addressed in task 2.)</figcaption>
 		</figure>
-			
-		<h3>Extra Credit</h3>
-		
-		<h2>Task 2: Antialiasing by Supersampling</h2>
+		<h4>Bounding Box</h4>
+		A smarter approach is to notice a box could be drawn around the triangle's vertices, shrinking the area of pixels that need to be checked. The algorithm is straightforward too, find the min_x, min_y, max_x, max_y of the vertices and clamp them to the screen width and length. Then double loop over these min and max, resulting in tremendous speedup and the default method moving forward.
+		<h4>Incremental Triangle Traversal (Top Down) - <b>Extra Credit</b></h4>
+		A different approach is to start at one of the vertices and line by line fill in the triangle, ignoring much of the wasteful checks outside the triangle in the bounding box. This can be a few different ways; left-to-right/right-to-left filling in columns or top-to-bottom/bottom-to-top filling in rows. Top-to-bottom was arbitrarily chosen and implemented.
+		<br><br>
+		To implement, the topmost vertice is used to begin at, going horizontally line by line until the bottom vertice is reached. To figure out where the horizontal line begins and ends the slopes of each edge are calculated before the looping begins. The current y level can be multiplied by the slope and added to the vertex's x to get the left/right (starting/end) points. Then loops through this horizontal line filling the sample_buffer with the triangle color.
+		<br><br>
+		To check the speed difference, <code>DrawRend::redraw()</code> was modified to include a high-resolution clock that starts before and ends after the <code>svg.draw()</code> call. Specific speed-up is hardware dependent, but on Jeremy's laptop rasterizing basic_image_5 using the bounding box (~2500 microseconds) vs. incremential triangle traversal (~200 microseconds) is a 10x difference! This might seem unintuitive at first; why a 10x speedup when surely you are not checking x10 fewer pixels? Although fewer pixels are looped over, there is no longer a need to check if the point is in the triangle saving many multiplications!
+		<br><br>
+		<i>Note: To enable incremental traversal in our code, press the <code>'I'</code> key.</i>
+					
+		<h2 id="section2">Task 2: Antialiasing by Supersampling</h2>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -113,7 +129,7 @@
 			</table>
 		</div>
 			
-		<h2>Task 3: Transforms</h2>
+		<h2 id="section3">Task 3: Transforms</h2>
 		
 		<h3>Extra Credit</h3>
 		<figure>
@@ -121,7 +137,7 @@
 			<figcaption>Gif of moving stick figure.</figcaption>
 		</figure>
 			
-		<h2>Task 4: Barycentric coordinates</h2>
+		<h2 id="section4">Task 4: Barycentric coordinates</h2>
 		<figure>
 			<img src="P4 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
 		</figure>
@@ -130,7 +146,7 @@
 			<img src="P4 Pic2.png" alt="P3 Extra Credit Animation" style="width:50%"/>
 		</figure>
 			
-		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
+		<h2 id="section5">Task 5: "Pixel sampling" for texture mapping</h2>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -156,7 +172,7 @@
 			</table>
 		</div>
 			
-		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
+		<h2 id="section6">Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 
 		<h3>Extra Credit</h3>
 		TODO
