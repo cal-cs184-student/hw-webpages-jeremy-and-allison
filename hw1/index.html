@@ -72,7 +72,7 @@ Now that a point can be determined in or out of a triangle, a looping algorithm 
 A straightforward approach is to check every single pixel in the image by using a double for loop. It produces the correct result but is horribly slow.
 <br>
 <figure>
-	<img src="P1 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
+	<img src="P1 Pic1.png"  style="width:50%"/>
 	<figcaption>(Example of aliasing, the pink triangle has a gap. This will be addressed in task 2.)</figcaption>
 </figure>
 <h4>Bounding Box</h4>
@@ -149,26 +149,42 @@ An example of where low discrepancy beat out grid sampling was at sampling rate 
 		</tr>
 	</table>
 </div>
-	
+<br>
 <h2 id="section3">Task 3: Transforms</h2>
 [TODO - ADD MODIFIED ROBOT]
 <h3>Extra Credit</h3>
 The extra GUI feature added was the ability to move the robot using the arrow keys seen below. To accomplish this <code>DrawRend::redraw()</code> was modified, specifically the <code>svg.draw</code> call. The second parameter was a homogeneous matrix multiply between <code>ndc_to_screen</code> and <code>svg_to_ndc</code>. A translation matrix, using the <code>translate</code> function, was interjected between the multiplication with the params of <code>translate_x</code> and <code>translate_y</code>. These translate members were initialized to 0 to have no initial effect but when the arrow keys are pressed they would be nudged by a <code>speed</code> factor. This factor was very small like 0.01 because normalized device coordinates (NDC) ranges from [-1, 1].
-
+<br>
 <figure>
-	<img src="P3 Extra Credit.gif" alt="P3 Extra Credit Animation" style="width:50%"/>
+	<img src="P3 Extra Credit.gif"  style="width:50%"/>
 	<figcaption>Gif of moving robot. (TA please view on website)</figcaption>
 </figure>
-	
-<h2 id="section4">Task 4: Barycentric coordinates</h2>
-<figure>
-	<img src="P4 Pic1.png" alt="P3 Extra Credit Animation" style="width:50%"/>
-</figure>
+<br>
 
+<h2 id="section4">Task 4: Barycentric coordinates</h2>
+Barycentric coordinates are a way to describe the location of a point in a triangle in relation to the 3 vertices and their edges. A point is described with an alpha, beta, and gamma corresponding to the A, B, and C vertices. From a geometric point of view, the parameters are the proportional distance (1-parameter) away from the vertex and the parameter away from the vertex's opposite edge. These distances summed together are 1, thus making the coordinates normalized. If the vertices represent a color or texture, the Barycentric coordinates can linearly interpolate the values across the triangle creating a smooth effect seen below:
+<br>
 <figure>
-	<img src="P4 Pic2.png" alt="P3 Extra Credit Animation" style="width:50%"/>
+	<img src="P4 Pic2.png"  style="width:50%"/>
+	<figcaption>Display this trianlge in code using the <code>'J'</code> key. Notice the top left vertex is red and as the distance away from vertex gets greater, the less the vertex's influence on the color is.</figcaption>
 </figure>
-	
+<br>
+The rasterization of the color wheel can be seen below:
+<br>
+<figure>
+	<img src="P4 Pic1.png"  style="width:50%"/>
+</figure>
+<br>
+<h3>For the Mathematically Inclined or Implementation Interested</h3>
+Given a point in the triangle (x,y) we need to know these "distance" or "weight" parameters alpha, beta, and gamma which is given by the formulas in class:
+<br>
+<figure>
+	<img src="P4 Pic3.png"  style="width:50%"/>
+</figure>
+<br>
+In the implementation, the denominator is calculated outside the rasterization loop as it has no dependence on the sampling point 'p'. The final color data written to the sample buffer is each of the 3 vertex colors weighted by their corresponding parameter summed together.
+<br>
+
 <h2 id="section5">Task 5: "Pixel sampling" for texture mapping</h2>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -194,7 +210,8 @@ The extra GUI feature added was the ability to move the robot using the arrow ke
 		</tr>
 	</table>
 </div>
-	
+<br>
+
 <h2 id="section6">Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 
 <h3>Extra Credit</h3>
