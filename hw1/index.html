@@ -41,14 +41,15 @@ Link to GitHub repository:<a href="https://github.com/cal-cs184-student/sp25-hw1
 
 <figure>
 	<img src="lion.jpg" alt="Lion" style="width:50%"/>
-	<figcaption>You can add images with captions!</figcaption>
+	TODO replace with extra credit image or something cool.
 </figure>
 
 <h2>Overview</h2>
+[TODO]
 Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 <h2 id="section1">Task 1: Drawing Single-Color Triangles</h2>
-<h3>What does it mean mathematically to be in a triangle?</h3>
+<h3>What Does it Mean Mathematically to be in a Triangle?</h3>
 To begin with rasterization, the most important question to know whether a pixel should be colored or not is if a point is inside or outside a triangle. To do this, take the cross-product between each vertex A to B, B to C, and C to A and observe the signage.
 <br><br>
 <code> 
@@ -65,7 +66,7 @@ But what makes makes a triangle "clockwise" or "counterclockwise"? It's not some
 <br><br>
 If this area is positive it's counterclockwise, if negative it's clockwise. However, we aren't using standard coordinates where (0,0) is the bottom left, instead we use the convention that (0,0) is the top left! Meaning we need to reverse this logic, if the area is positive it is clockwise, and if negative counterclockwise.
 <br><br>
-To check an actual pixel (at sampling rate 1) an offset is needed to check the center of the pixel by adding 1/2 to the x and y. For example, if you were checking pixel (10, 10) you would check if (10.5, 10.5) was inside the triangle.
+To check an actual pixel (at sampling rate 1), an offset is needed to check the center of the pixel by adding 1/2 to the x and y. For example, if you were checking pixel (10, 10) you would check if (10.5, 10.5) was inside the triangle.
 <h3>Looping Strategies</h3>
 Now that a point can be determined in or out of a triangle, a looping algorithm is needed to efficiently check pixels.
 <h4>Naive</h4>
@@ -80,9 +81,9 @@ A smarter approach is to notice a box could be drawn around the triangle's verti
 <h4>Incremental Triangle Traversal (Top Down) - <b>Extra Credit</b></h4>
 A different approach is to start at one of the vertices and line by line fill in the triangle, ignoring much of the wasteful checks outside the triangle in the bounding box. This can be a few different ways; left-to-right/right-to-left filling in columns or top-to-bottom/bottom-to-top filling in rows. Top-to-bottom was arbitrarily chosen and implemented.
 <br><br>
-To implement, the topmost vertice is used to begin at, going horizontally line by line until the bottom vertice is reached. To figure out where the horizontal line begins and ends the slopes of each edge are calculated before the looping begins. The current y level can be multiplied by the slope and added to the vertex's x to get the left/right (starting/end) points. Then loops through this horizontal line filling the sample_buffer with the triangle color.
+To implement, the topmost vertice is used to begin at, going horizontally line by line until the bottom vertice is reached. To figure out where the horizontal line begins and ends the slopes of each edge are calculated before the looping begins. The current y level can be multiplied by the slope and added to the vertex's x to get the left/right (starting/end) points. Then loop through this horizontal line, filling the sample_buffer with the triangle color.
 <br><br>
-To check the speed difference, <code>DrawRend::redraw()</code> was modified to include a high-resolution clock that starts before and ends after the <code>svg.draw()</code> call. Specific speed-up is hardware dependent, but on Jeremy's laptop rasterizing basic_image_5 using the bounding box (~2500 microseconds) vs. incremential triangle traversal (~200 microseconds) is a 10x difference! This might seem unintuitive at first; why a 10x speedup when surely you are not checking x10 fewer pixels? Although fewer pixels are looped over, there is no longer a need to check if the point is in the triangle saving many multiplications!
+To check the speed difference, <code>DrawRend::redraw()</code> was modified to include a high-resolution clock that starts before and ends after the <code>svg.draw()</code> call. Specific speed-up is hardware dependent, but on Jeremy's laptop rasterizing basic_image_5 using the bounding box (~2500 microseconds) vs. incremential triangle traversal (~200 microseconds) saw a 10x difference! This might seem unintuitive at first; why a 10x speedup when surely you are not checking x10 fewer pixels? Although fewer pixels are looped over, there is no longer a need to check if the point are in the triangle saving many multiplications!
 <br><br>
 <i>Note: To enable incremental traversal in our code, press the <code>'I'</code> key.</i>
 			
@@ -91,18 +92,18 @@ To check the speed difference, <code>DrawRend::redraw()</code> was modified to i
 A single sample can cause aliasing problems as seen in task 1 with a noticeable gap in the pink triangle. Additionally, nasty jaggies can be seen on the edges of triangles which need to be smoothed out. To solve this a technique of supersampling can be employed.
 
 <h3>Supersampling Algorithm</h3>
-Before sampling was done in the middle of the pixel, but with a higher number of samples, a grid structure is used. For each pixel sampled, two for loops iterated over the grid checking if the sample is within the triangle, if so (and with the proper index offset) the sample_buffer is set with the color. Samples not in the triangle are left as the default white color. Later when the colors are averaged, if all samples were in the triangle the color of the pixel would simply be the color, however, if not all the samples were in the triangle a nice average faded color would be assigned to the pixel.
+Before sampling was done in the middle of the pixel, but with a higher number of samples, a grid structure is used. For each pixel sampled, two for loops iterate over the grid checking if the sample is within the triangle, if so (and with the proper index offset) the sample_buffer is set with the color. Samples not in the triangle are left as the default white color. Later when the colors are averaged, if all samples were in the triangle the color of the pixel would simply be the color, however, if not all the samples were in the triangle a nice average faded color would be assigned to the pixel.
 
 <h3>Modification to Pipeline</h3>
 With additional samplings, the sample_buffer needed to be resized to accompany the new data. In the setters <code>RasterizerImp::set_sample_rate</code> and <code>RasterizerImp::set_framebuffer_target</code> resize was changed to multiply by sample_rate, as each pixel now has 'sample_rate' number more data.
 <br><br>
 The <code>RasterizerImp::resolve_to_framebuffer</code> was modified as now there is 'sample_rate' number of samples to accumulate into one pixel. To accumulate, simply average the RGB between all the samples and insert the final color into the frame buffer. 
 <br><br>
-A slight change to <code>RasterizerImp::fill_pixel</code> was needed. Before the code simply inserted the color into the sample_buffer, but this didn't account for the sample_rate size increase. To fix this, insert 'sample_rate' number of color data into the sample_buffer.
+A slight change to <code>RasterizerImp::fill_pixel</code> was needed. Before, the code simply inserted the color into the sample_buffer, but this didn't account for the sample_rate size increase. To fix this, insert 'sample_rate' number of color data into the sample_buffer.
 
 <h3>Result and Utility</h3>
 Using supersampling can clearly fix both jaggies, alias gaps, and other aliasing problems as seen in the image grid of various supersampling below:
-<br>
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -128,12 +129,12 @@ Using supersampling can clearly fix both jaggies, alias gaps, and other aliasing
 	</table>
 </div>
 <br>
-The gap problem is solved as more of the pixel is uniformly sampled reducing the chance of a pixel being completely missed. Jaggies are solved as the nice fade helps reduce the sudden drop-off in color. The results are great but the additional sampling can take a toll on computation exponentially!
+The gap problem is solved as more of the pixels are uniformly spaced reducing the chance of a pixel being completely missed during sampling. Jaggies are solved as the nice fade helps reduce the sudden drop-off in color. The results are great but the additional sampling can take a toll on computation!
 	
 <h3>Extra Credit - Hammersley's 2D Low Discrepancy Sampling</h3>
-The idea of low discrepancy sampling is to have a better pattern of sampling than a ridged grid. If you imagine a 4x4 grid, you could imagine missed sampling if a line or thin triangle went between the grid or was directly left/right of the grid. Hemmersley's method was implemented, <a href="http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html">sourced here</a>, which produced a 2D vector to be added to the pixel's center to get the sampling location. This process was repeated in a loop 'sample_rate' number of times.
+The idea of low discrepancy sampling is to have a better pattern of sampling than a ridged grid. Take a 4x4 grid for example, you could imagine missed sampling if a line or thin triangle went between the grid or was directly left/right of the grid. Hemmersley's method was implemented, <a href="http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html">sourced here</a>, which produced a 2D vector to be added to the pixel's center to get the sampling location. This process was repeated in a loop 'sample_rate' number of times.
 <br><br>
-An example of where low discrepancy beat out grid sampling was at sampling rate 4 of the pink triangle. With a more uniform sampling the Hammersley succesfully had no gaps in the triangle whereas the grid pattern still struggled. At higher sampling rates there is not much of a difference, but to get better quality sampling at a lower rate saves and order of magnitude of computation!
+An example of where low discrepancy beat out grid sampling was at sampling rate 4 of the pink triangle. With a more uniform sampling the Hammersley succesfully had no gaps in the triangle whereas the grid pattern still struggled. At higher sampling rates there is not much of a difference, but to get better quality sampling at a lower rate saves an order of magnitude of computation!
 <br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -153,7 +154,7 @@ An example of where low discrepancy beat out grid sampling was at sampling rate 
 <h2 id="section3">Task 3: Transforms</h2>
 [TODO - ADD MODIFIED ROBOT]
 <h3>Extra Credit</h3>
-The extra GUI feature added was the ability to move the robot using the arrow keys seen below. To accomplish this <code>DrawRend::redraw()</code> was modified, specifically the <code>svg.draw</code> call. The second parameter was a homogeneous matrix multiply between <code>ndc_to_screen</code> and <code>svg_to_ndc</code>. A translation matrix, using the <code>translate</code> function, was interjected between the multiplication with the params of <code>translate_x</code> and <code>translate_y</code>. These translate members were initialized to 0 to have no initial effect but when the arrow keys are pressed they would be nudged by a <code>speed</code> factor. This factor was very small like 0.01 because normalized device coordinates (NDC) ranges from [-1, 1].
+The extra GUI feature added was the ability to move the robot using the arrow keys seen below. To accomplish this <code>DrawRend::redraw()</code> was modified, specifically the <code>svg.draw</code> call. The second parameter was a homogeneous matrix multiply between <code>ndc_to_screen</code> and <code>svg_to_ndc</code>. A translation matrix, using the <code>translate</code> function, was interjected between the multiplication with the params of <code>translate_x</code> and <code>translate_y</code>. These translate members variables were initialized to 0 to have no initial effect but when the arrow keys are pressed they would be nudged by a <code>speed</code> factor. This factor was very small like 0.01 because normalized device coordinates (NDC) ranges from [-1, 1].
 <br>
 <figure>
 	<img src="P3 Extra Credit.gif"  style="width:50%"/>
@@ -162,11 +163,11 @@ The extra GUI feature added was the ability to move the robot using the arrow ke
 <br>
 
 <h2 id="section4">Task 4: Barycentric coordinates</h2>
-Barycentric coordinates are a way to describe the location of a point in a triangle in relation to the 3 vertices and their edges. A point is described with an alpha, beta, and gamma corresponding to the A, B, and C vertices. From a geometric point of view, the parameters are the proportional distance (1-parameter) away from the vertex and the parameter away from the vertex's opposite edge. These distances summed together are 1, thus making the coordinates normalized. If the vertices represent a color or texture, the Barycentric coordinates can linearly interpolate the values across the triangle creating a smooth effect seen below:
+Barycentric coordinates are a way to describe the location of a point in a triangle in relation to the 3 vertices and their edges. A point is described with an alpha, beta, and gamma corresponding to the A, B, and C vertices. From a geometric point of view, the parameters are the proportional distance (1-'parameter') away from the vertex and a 'parameter' length away from the vertex's opposite edge. These distances summed together are 1, thus making the coordinates normalized. If the vertices represent a color or texture, the Barycentric coordinates can linearly interpolate the values across the triangle creating a smooth effect seen below:
 <br>
 <figure>
 	<img src="P4 Pic2.png"  style="width:50%"/>
-	<figcaption>Display this trianlge in code using the <code>'J'</code> key. Notice the top left vertex is red and as the distance away from vertex gets greater, the less the vertex's influence on the color is.</figcaption>
+	<figcaption>Display this trianlge in code using the <code>'J'</code> key. Notice the top left vertex is red and as the distance away from vertex gets greater, the less the vertex's influence on the resulting color is.</figcaption>
 </figure>
 <br>
 The rasterization of the color wheel can be seen below:
@@ -189,7 +190,7 @@ In the implementation, the denominator is calculated outside the rasterization l
 
 <h2 id="section5">Task 5: "Pixel sampling" for texture mapping</h2>
 <h3>Nearest vs Bilinear Pixel Filtering</h3>
-Nearest, as the naming implies, simply returns the nearest texel of the texture map. Bilinear however is influenced by the 4 nearest texels weighted by their distance. The top 2 texels are lerped along with the bottom 2. The resulting values are then lerped for the final resulting color that is much more smooth.
+Nearest, as the naming implies, simply returns the color from the nearest texel of the texture map. Bilinear however is influenced by the 4 nearest texels weighted by their distance. The top 2 texels are lerped along with the bottom 2. The resulting values are then lerped for the final resulting color that is much more smooth.
 <br>
 <figure>
 	<img src="P5 Bilinear Pic.png"  style="width:50%"/>
@@ -225,7 +226,7 @@ Nearest, as the naming implies, simply returns the nearest texel of the texture 
 The example above demonstrates the effect of bilinear vs nearest with sample rates of 1 and 16. At rate 1, there is already a noticeable effect with very jagged lines in the nearest, but nice smooth lines in the bilinear. The effect is much less noticeable in the supersampling 16 but if you zoom in you can see that the faded region of nearest is a little bit jaggy whereas the bilinear has consistent horizontal lines of different shading. With how expensive supersampling is, bilinear offers a more cost-effective way to prevent aliasing effects like jaggies when dealing with textures. There will be a large difference between the two filtering methods when there are fine lines or sudden changes in textures.
 
 <h2 id="section6">Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-The simplest level sampling is option 'Zero' where you simply use the zeroth layer of the mipmap, the highest quality. The next option 'Nearest' was implemented based on the formula below which is dependent on camera zoom. The farther away the camera is, the larger the derivative is.
+The simplest level sampling is option 'Zero' where you simply use the zeroth layer of the mipmap, the highest quality. The next option 'Nearest' was implemented based on the formula belowm, which is dependent on camera zoom. The farther away the camera is, the larger the derivative is.
 <br>
 <figure>
 	<img src="P6 Map Level Formula.png"  style="width:50%"/>
