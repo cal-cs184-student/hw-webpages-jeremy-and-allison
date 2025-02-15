@@ -29,7 +29,7 @@
 <div class="container">
 <h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
 <div style="text-align: center;">Names: Jeremy Fischer and Allison Dana</div>
-<div><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a><div>
+<div style="text-align: center;"><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a><div>
 
 <br>
 
@@ -242,26 +242,18 @@ The final option 'linear' takes the nearest sampling to the next level, interpol
 -<b>Nearest</b>: There requires more memory as multiple levels of resolutions need to be generated. The formula to find texture level requires a square root, a notoriously slow operation to perform every sampling. However, there are sizable gains in antialiasing powers, especially when the view distance is far away.
 <br>
 -<b>Linear</b>: There requires additional memory like nearest. It requires more computation than nearest as it needs to sample the texture twice. However, it provides the most power antialiasing providing a smooth transition between texture mappings.
-
-<h3>Extra Credit</h3>
-TODO
 	
 <h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
 
 <h2>References</h2>
 http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 
-<h2>Additional Notes (please remove)</h2>
-	
-<ul>
-	<li>You can also add code if you'd like as so: <code>code code code</code></li>
-	<li>If you'd like to add math equations, 
-		<ul>
-			<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-			<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-		</ul>
-	</li>
-</ul>
+<h2>Use of AI</h2>
+Team member Jeremy used ChatGPT o3-mini-high to quiz his knowledge on HW1 topics, learn C++ syntax (I'm rusty), debugging, and get coding ideas to implement like for the extra credit 2 Hemmersley's method. He did not use it for any report writing.
+
+<h3>What Did You Learn? (Jeremy)</h3>
+GPT is great at summarizing ideas and ensuring you understand the HW concepts clearly. For example, I would explain what bilinear is in my own words and ask GPT if I had any misconceptions. At various times I'd get stuck with some C++ debugging and GPT is able to read the error log and give some ideas as to what might be wrong. I've found it can explain syntax better and faster than the docs, for example, I didn't know what the keyword auto& was doing with the mipmap.
+
 </div>
 </body>
 </html>
