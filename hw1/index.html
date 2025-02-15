@@ -183,9 +183,19 @@ Given a point in the triangle (x,y) we need to know these "distance" or "weight"
 </figure>
 <br>
 In the implementation, the denominator is calculated outside the rasterization loop as it has no dependence on the sampling point 'p'. The final color data written to the sample buffer is each of the 3 vertex colors weighted by their corresponding parameter summed together.
+<br><br>
+<code>sample_buffer[pixel_offset + subsample_offset] = c0 * alpha + c1 * beta + c2 * gamma;</code>
 <br>
 
 <h2 id="section5">Task 5: "Pixel sampling" for texture mapping</h2>
+<h3>Nearest vs Bilinear Pixel Filtering</h3>
+Nearest, as the naming implies, simply returns the nearest texel of the texture map. Bilinear however is influenced by the 4 nearest texels weighted by their distance. The top 2 texels are lerped along with the bottom 2. The resulting values are then lerped for the final resulting color that is much more smooth.
+<br>
+<figure>
+	<img src="P5 Bilinear Pic.png"  style="width:50%"/>
+	<figcaption>Lecture 5 - Bilinear Filtering Visual Aid</figcaption>
+</figure>
+<br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -212,7 +222,26 @@ In the implementation, the denominator is calculated outside the rasterization l
 </div>
 <br>
 
+The example above demonstrates the effect of bilinear vs nearest with sample rates of 1 and 16. At rate 1, there is already a noticeable effect with very jagged lines in the nearest, but nice smooth lines in the bilinear. The effect is much less noticeable in the supersampling 16 but if you zoom in you can see that the faded region of nearest is a little bit jaggy whereas the bilinear has consistent horizontal lines of different shading. With how expensive supersampling is, bilinear offers a more cost-effective way to prevent aliasing effects like jaggies when dealing with textures. There will be a large difference between the two filtering methods when there are fine lines or sudden changes in textures.
+
 <h2 id="section6">Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
+The simplest level sampling is option 'Zero' where you simply use the zeroth layer of the mipmap, the highest quality. The next option 'Nearest' was implemented based on the formula below which is dependent on camera zoom. The farther away the camera is, the larger the derivative is.
+<br>
+<figure>
+	<img src="P6 Map Level Formula.png"  style="width:50%"/>
+	<figcaption>Lecture 5 - Level Map Formula</figcaption>
+</figure>
+<br>
+Having high-quality textures viewed from far away can create aliasing as sharp details are squished in a finite space. By creating multiple levels of texture qualities, a more blurred texture can be more appropriate when viewed from far away. However close-up inspections should still use the highest quality texture.
+<br><br>
+The final option 'linear' takes the nearest sampling to the next level, interpolating between the the level above and below the texel. A fractional weight is applied to the low and high and color is accumulated and averaged. This provides a more natural blending of quality than a sudden drop-off.
+<br>
+<h3>Memory, Speed, and Antialiasing Power</h3>
+-<b>Zero</b>: It's as if there is no level sampling so it's the fastest, requires no additional memory, but has no antialiasing power when viewed from a distance.
+<br>
+-<b>Nearest</b>: There requires more memory as multiple levels of resolutions need to be generated. The formula to find texture level requires a square root, a notoriously slow operation to perform every sampling. However, there are sizable gains in antialiasing powers, especially when the view distance is far away.
+<br>
+-<b>Linear</b>: There requires additional memory like nearest. It requires more computation than nearest as it needs to sample the texture twice. However, it provides the most power antialiasing providing a smooth transition between texture mappings.
 
 <h3>Extra Credit</h3>
 TODO
