@@ -45,8 +45,7 @@ Link to GitHub repository:<a href="https://github.com/cal-cs184-student/sp25-hw1
 </figure>
 
 <h2>Overview</h2>
-[TODO]
-Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+In this assignment, we tackle the problem of rasterization; the process of drawing objects to the screen and combatting aliasing with a variety of methods. We start with the basics, like what it means mathematically to be inside a triangle, before moving on to more complex topics. However not all methods are created equal, we explore the effectiveness of supersampling, bounding boxes, incremental traversal, interpolation, bilinear, trilinear, and other methods while weighing their time and memory complexity. We've learned that overcoming aliasing often comes at a cost, such as using supersampling, but you can be smarter by using methods like bilinear or trilinear filtering to often achieve better visual results with lower time complexity.
 
 <h2 id="section1">Task 1: Drawing Single-Color Triangles</h2>
 <h3>What Does it Mean Mathematically to be in a Triangle?</h3>
