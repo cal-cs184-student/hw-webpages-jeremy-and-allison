@@ -29,7 +29,7 @@
 <div class="container">
 <h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
 <div style="text-align: center;">Names: Jeremy Fischer and Allison Dana</div>
-<div style="text-align: center;"><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a><div>
+<div style="text-align: center;"><a href="#section1">Task 1</a> - <a href="#section2">Task 2</a> - <a href="#section3">Task 3</a> - <a href="#section4">Task 4</a> - <a href="#section5">Task 5</a> - <a href="#section6">Task 6</a></div>
 
 <br>
 
@@ -151,7 +151,13 @@ An example of where low discrepancy beat out grid sampling was at sampling rate 
 </div>
 <br>
 <h2 id="section3">Task 3: Transforms</h2>
-[TODO - ADD MODIFIED ROBOT]
+For our custom robot, we turned their head back and rotated/translated their arms into a waving position!
+<br>
+<figure>
+	<img src="P3 Custom Robot.png"  style="width:50%"/>
+</figure>
+<br>
+
 <h3>Extra Credit</h3>
 The extra GUI feature added was the ability to move the robot using the arrow keys seen below. To accomplish this <code>DrawRend::redraw()</code> was modified, specifically the <code>svg.draw</code> call. The second parameter was a homogeneous matrix multiply between <code>ndc_to_screen</code> and <code>svg_to_ndc</code>. A translation matrix, using the <code>translate</code> function, was interjected between the multiplication with the params of <code>translate_x</code> and <code>translate_y</code>. These translate members variables were initialized to 0 to have no initial effect but when the arrow keys are pressed they would be nudged by a <code>speed</code> factor. This factor was very small like 0.01 because normalized device coordinates (NDC) ranges from [-1, 1].
 <br>
@@ -160,6 +166,7 @@ The extra GUI feature added was the ability to move the robot using the arrow ke
 	<figcaption>Gif of moving robot. (TA please view on website)</figcaption>
 </figure>
 <br>
+
 
 <h2 id="section4">Task 4: Barycentric coordinates</h2>
 Barycentric coordinates are a way to describe the location of a point in a triangle in relation to the 3 vertices and their edges. A point is described with an alpha, beta, and gamma corresponding to the A, B, and C vertices. From a geometric point of view, the parameters are the proportional distance (1-'parameter') away from the vertex and a 'parameter' length away from the vertex's opposite edge. These distances summed together are 1, thus making the coordinates normalized. If the vertices represent a color or texture, the Barycentric coordinates can linearly interpolate the values across the triangle creating a smooth effect seen below:
@@ -242,9 +249,43 @@ The final option 'linear' takes the nearest sampling to the next level, interpol
 -<b>Nearest</b>: There requires more memory as multiple levels of resolutions need to be generated. The formula to find texture level requires a square root, a notoriously slow operation to perform every sampling. However, there are sizable gains in antialiasing powers, especially when the view distance is far away.
 <br>
 -<b>Linear</b>: There requires additional memory like nearest. It requires more computation than nearest as it needs to sample the texture twice. However, it provides the most power antialiasing providing a smooth transition between texture mappings.
-	
-<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
+<br>
 
+<h2>Comparing L_ZERO, L_NEAREST, P_NEAREST, P_LINEAR</h2>
+<br>
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="P6 L_Zero P_Nearest.png" width="400px"/>
+			<figcaption>L_ZERO - P_NEAREST</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P6 L_Zero P_Linear.png" width="400px"/>
+			<figcaption>L_ZERO - P_LINEAR</figcaption>
+		</td>
+		</tr>
+		<tr>
+		<td style="text-align: center;">
+			<img src="P6 L_Nearest P_Nearest.png" width="400px"/>
+			<figcaption>L_NEAREST - P_NEAREST</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="P6 L_Nearest P_Linear.png" width="400px"/>
+			<figcaption>L_NEAREST - P_LINEAR</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+<br><br>
+Above shows off different options of level and pixel sampling. Notice in L_ZERO, P_NEAREST there are some rough textures on the squirrel's fur from trying to squeeze a lot of details like fur highlights in a small area. The grass near the front that is zoomed into is very jaggy.
+<br><br>
+This is improved slightly when moving to L_ZERO, P_LINEAR with the pixel sampling linearly interpolated. This reduces the harsh transitions by blending texel values but still is suffering from high-frequency aliasing.
+<br><br>
+However, the biggest improvement is switching to L_NEAREST where a smaller mipmap is sampled from. The squirrel's fur no longer has jagged highlights but the zoomed-in grass blade still is a little jagged, although smoothed out a bit.
+<br><br>
+That is fixed when moving to L_NEAREST, P_NEAREST where the squirrel's fur continues to be smoothed but the grass blade is no longer jaggy by lerping nearby texels.
+<br><br>
 <h2>References</h2>
 http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 
