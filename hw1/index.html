@@ -130,7 +130,7 @@ Using supersampling can clearly fix both jaggies, alias gaps, and other aliasing
 The gap problem is solved as more of the pixels are uniformly spaced reducing the chance of a pixel being completely missed during sampling. Jaggies are solved as the nice fade helps reduce the sudden drop-off in color. The results are great but the additional sampling can take a toll on computation!
 	
 <h3>Extra Credit - Hammersley's 2D Low Discrepancy Sampling</h3>
-The idea of low discrepancy sampling is to have a better pattern of sampling than a ridged grid. Take a 4x4 grid for example, you could imagine missed sampling if a line or thin triangle went between the grid or was directly left/right of the grid. Hemmersley's method was implemented, <a href="http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html">sourced here</a>, which produced a 2D vector to be added to the pixel's center to get the sampling location. This process was repeated in a loop 'sample_rate' number of times.
+The idea of low discrepancy sampling is to have a better pattern of sampling than a ridged grid. Take a 4x4 grid for example, you could imagine missed sampling if a line or thin triangle went between the grid or was directly left/right of the grid. Hemmersley's method was implemented, <a href="https://www.shadertoy.com/view/4lscWj">sourced here</a>, which produced a 2D vector to be added to the pixel's center to get the sampling location. This process was repeated in a loop 'sample_rate' number of times.
 <br><br>
 An example of where low discrepancy beat out grid sampling was at sampling rate 4 of the pink triangle. With a more uniform sampling the Hammersley succesfully had no gaps in the triangle whereas the grid pattern still struggled. At higher sampling rates there is not much of a difference, but to get better quality sampling at a lower rate saves an order of magnitude of computation!
 <br>
@@ -286,7 +286,9 @@ However, the biggest improvement is switching to L_NEAREST where a smaller mipma
 That is fixed when moving to L_NEAREST, P_NEAREST where the squirrel's fur continues to be smoothed but the grass blade is no longer jaggy by lerping nearby texels.
 <br><br>
 <h2>References</h2>
-http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+
+http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html (No longer up for some reason. See simular source for hemmersley below)
+https://www.shadertoy.com/view/4lscWj
 
 <h2>Use of AI</h2>
 Team member Jeremy used ChatGPT o3-mini-high to quiz his knowledge on HW1 topics, learn C++ syntax (I'm rusty), debugging, and get coding ideas to implement like for the extra credit 2 Hemmersley's method. He did not use it for any report writing.
