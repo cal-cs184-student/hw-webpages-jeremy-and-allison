@@ -158,7 +158,7 @@ With the algorithm implemented, we could render the teapot!
 <h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 <h3 id="section3">Part 3: Area-weighted vertex normals</h3>
-
+Given a vertex how can we get it's normal? One good idea is to get all the nearby triangle normal's and average it:
 
 <figure>
 	<img src="normal fig.png"  style="width:50%"/>
@@ -167,10 +167,27 @@ With the algorithm implemented, we could render the teapot!
 
 <figure>
 	<img src="norm equation.png"  style="width:50%"/>
-	<figcaption>Average - Lecture 6</figcaption>
+	<figcaption>Average Normal Equation- Lecture 6</figcaption>
 </figure>
-However, we want to average with the weight of the area. But why? Consider if there was one neighbor triangle that was very small but had sharp normal not aligned with the other normals. This outlier would unfairly affect the result, thus we weigh by area.
+However, we want to average the weight of the area. But why? Consider if there was one neighbor triangle that was very small but had sharp normal not aligned with the other normals. This outlier would over influence the result, thus we weigh by area to dampen these outliers.
 
+As for implementation, we loop over every triangle face, calculate its area, and multiply it by the normal. All of these area-multiplied vectors are collected and averaged to get the final result. The before and after shows the nice shading this averaging technique produces.
+<br><br>
+As a result, the shading makes the teapot look smooth!
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="unshaded.png" width="400px"/>
+			<figcaption>Without Averaging</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="shaded.png" width="400px"/>
+			<figcaption>With Averaging</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
 
 <h3 id="section4">Part 4: Edge flip</h3>
 
