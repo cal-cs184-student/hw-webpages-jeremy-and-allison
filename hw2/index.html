@@ -159,6 +159,19 @@ With the algorithm implemented, we could render the teapot!
 
 <h3 id="section3">Part 3: Area-weighted vertex normals</h3>
 
+
+<figure>
+	<img src="normal fig.png"  style="width:50%"/>
+	<figcaption>Neighbor Normals - Lecture 6</figcaption>
+</figure>
+
+<figure>
+	<img src="norm equation.png"  style="width:50%"/>
+	<figcaption>Average - Lecture 6</figcaption>
+</figure>
+However, we want to average with the weight of the area. But why? Consider if there was one neighbor triangle that was very small but had sharp normal not aligned with the other normals. This outlier would unfairly affect the result, thus we weigh by area.
+
+
 <h3 id="section4">Part 4: Edge flip</h3>
 
 <h3 id="section5">Part 5: Edge split</h3>
