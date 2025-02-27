@@ -52,9 +52,19 @@ We've already added one heading per part, to make your write-up as navigable whe
 Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 <h2>Section I: Bezier Curves and Surfaces</h2>
+Bezier curves are constructed with a series of linear inertpolations
 
 <h3 id="section1">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
+Bezier curves are constructed with a series of linear interpolations (lerps) of their control points. You can imagine the control points as magnets that attract the curve, pulling it in its direction. To evaluate the control points at each step, the points are iterative over and the current point and point ahead are lerped to produce a new point. The resulting points are stored in a new array, 1 size smaller than the last. This repeats until the base case, which is when 1 point remains which is also a point on the curve.
+<br><br>
+<figure>
+	<img src="2D bezier.png"  style="width:50%"/>
+	<figcaption>Lerp Graph - Lecture 7</figcaption>
+</figure>
 
+
+Below is a custom curve evaluated at each step. Notice the new points created over time reduced by 1. The final point (red) is a point that lies on the curve.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -88,6 +98,9 @@ Give a high-level overview of what you implemented in this homework. Think about
 	</table>
 </div>
 
+<br><br>
+The <code>t</code> parameters toggles the evaluation point. Below are 3 static evaluations at different positions, and a Complimentary gif showing the smooth movement using the scroll wheel.
+<br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -119,7 +132,18 @@ Give a high-level overview of what you implemented in this homework. Think about
 </div>
 
 <h3 id="section2">Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
+A bi-cubic Bezier surface patch has 4x4 control points, 16 total, and like the 2D case does a series of lerps to get the resulting point. First, each row of 4 points are lerped to produce 4 points. Then these points are lerped to produce the final point.
 
+<figure>
+	<img src="3D bezier.png"  style="width:50%"/>
+	<figcaption>Lerp Graph 3D - Lecture 7</figcaption>
+</figure>
+
+Recursion was used in the <code>evaluate1D</code> which kept calling <code>evaluateStep</code> (which again, reduces the number of points by 1) until there was only 1 point. The overarching function <code>BezierPatch::evaluate</code> used the recursive function to evaluate the rows using scalar interpolation parameter <code>u</code> and stored them in a vector. This final vector was fed one last time into the recursive function but this time with the other axis parameter <code>v</code> to get the final point.
+
+<br><br>
+With the algorithm implemented, we could render the teapot!
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
