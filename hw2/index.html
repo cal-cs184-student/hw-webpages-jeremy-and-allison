@@ -33,7 +33,7 @@
 
 <br>
 
-Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html">https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html</a>
+Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw2/index.html">https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html</a>
 
 <br>
 
@@ -271,10 +271,111 @@ Implementation of boundary was rather simple; only 1 vertex, 1 edge, 1 face, and
 </div>
 
 <h3 id="section6">Part 6: Loop subdivision for mesh upsampling</h3>
+We follow the TA's suggested steps which are the following:
+<br><br>
+1. Compute the new positions for all the pre-existing vertices using the neighbor vertex equations
+<code>double u = (n == 3) ? 3.0/16.0 : 3.0/(8.0 * n);</code>
+<code>v->newPosition = (1 - n*u) * v->position + u * neighborSum;
+</code>
+<br><br>
+2. Compute the new vertices (the ones created from the splits) new positions, using the given equation.
+<code>e->newPosition = (3.0/8.0) * (A->position + B->position) + (1.0/8.0) * (C->position + D->position);</code>
+<br><br>
+3. Split every edge. We modified the split function to set the edges and vertex to be flagged as new. We also created a new flag <code>isOriginal</code> for the edges. This is so we do not flip edges in line with the previous mesh.
+<br><br>
+4. Flip any new edge that connects an old and new vertex using the flags.
+<br><br>
+5. Copy the vertex new positions into the vertices.
+<br><br>
+6. Reset flags in case additional subdivisions are used.
+<br><br>
 
-<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
+The result is below. Sharp corners are radically smoothed out.
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="monster.png" width="400px"/>
+			<figcaption>Before</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="monster 1.png" width="400px"/>
+			<figcaption>After</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+<br><br>
 
-<h2>Additional Notes (please remove)</h2>
+<h4>Cude.dae Pre-process</h4>
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="cube.png" width="400px"/>
+			<figcaption>No upsampling</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="cube 1.png" width="400px"/>
+			<figcaption>Upsampling 1</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="cube 2.png" width="400px"/>
+			<figcaption>Upsampling 2</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+
+TODO talk about preprocessing
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="Before.png" width="400px"/>
+			<figcaption>Pre-process</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="After.png" width="400px"/>
+			<figcaption>Pre-process Upsampling 1</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="After.png" width="400px"/>
+			<figcaption>Pre-process Upsampling 2</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+
+<h4>Debugging</h4>
+We used break points as discussed previously, however, the subdivision actually exposed incorrect assignments that were missed in the flipping and splitting code. These small errors were invisible until subdividing which caused infinite looping and face gaps.
+
+<h4>Extra Credit</h4>
+To allow boundry split, we we first check if the vertex was on a boundry, if so find its 2 neighbor's vertice and apply the equation found in the resource for the newPosition:
+<br><br>
+<code>v->newPosition = 0.75 * v->position + 0.125 * (boundaryNeighbor1 + boundaryNeighbor2);</code>
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="X6.png" width="400px"/>
+			<figcaption>Before</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="X6 2.png" width="400px"/>
+			<figcaption>After</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+
+<h2>Use of AI (The same as HW 1)</h2>
+Team member Jeremy used ChatGPT o3-mini-high to quiz his knowledge on HW1 topics, learn new C++ syntax, and debugging. He did not use it for any report writing.
+
+<h3>What Did You Learn? (Jeremy)</h3>
+GPT is great at summarizing ideas and ensuring you understand the HW concepts clearly. For example, I would explain what bilinear is in my own words and ask GPT if I had any misconceptions. At various times I'd get stuck with some C++ debugging and GPT is able to read the error log and give some ideas as to what might be wrong. I've found it can explain syntax better and faster than the docs, for example, I didn't know what the keyword auto& was doing with the mipmap.
+
 
 
 </div>
