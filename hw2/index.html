@@ -295,11 +295,11 @@ The result is below. Sharp corners are radically smoothed out.
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="monster.png" width="400px"/>
+			<img src="teapot before upsample.png" width="400px"/>
 			<figcaption>Before</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="monster 1.png" width="400px"/>
+			<img src="teapot after upsample.png" width="400px"/>
 			<figcaption>After</figcaption>
 		</td>
 		</tr>
@@ -312,16 +312,20 @@ The result is below. Sharp corners are radically smoothed out.
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="cube.png" width="400px"/>
+			<img src="cube no 1.png" width="400px"/>
 			<figcaption>No upsampling</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="cube 1.png" width="400px"/>
+			<img src="cube no 2.png" width="400px"/>
 			<figcaption>Upsampling 1</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="cube 2.png" width="400px"/>
+			<img src="cube no 3.png" width="400px"/>
 			<figcaption>Upsampling 2</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="cube no 4.png" width="400px"/>
+			<figcaption>Upsampling 3</figcaption>
 		</td>
 		</tr>
 	</table>
@@ -332,20 +336,29 @@ TODO talk about preprocessing
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="Before.png" width="400px"/>
+			<img src="cube yes 1.png" width="400px"/>
 			<figcaption>Pre-process</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="After.png" width="400px"/>
+			<img src="cube yes 2.png" width="400px"/>
 			<figcaption>Pre-process Upsampling 1</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="After.png" width="400px"/>
+			<img src="cube yes 3.png" width="400px"/>
 			<figcaption>Pre-process Upsampling 2</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="cube yes 4.png" width="400px"/>
+			<figcaption>Pre-process Upsampling 3</figcaption>
 		</td>
 		</tr>
 	</table>
 </div>
+
+<figure>
+	<img src="cube yes 4 front view.png"  style="width:50%"/>
+	<figcaption>Pre-process Upsample 3 front view</figcaption>
+</figure>
 
 <h4>Debugging</h4>
 We used break points as discussed previously, however, the subdivision actually exposed incorrect assignments that were missed in the flipping and splitting code. These small errors were invisible until subdividing which caused infinite looping and face gaps.
