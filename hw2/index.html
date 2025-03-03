@@ -33,15 +33,14 @@
 
 <br>
 
-Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw2/index.html">https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw1/index.html</a>
+Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw2/index.html">https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw2/index.html</a>
 
 <br>
 
-Link to GitHub repository:<a href="https://github.com/cal-cs184-student/sp25-hw1-jeremy-allison">https://github.com/cal-cs184-student/sp25-hw1-jeremy-allison</a>
+Link to GitHub repository:<a href="https://github.com/cal-cs184-student/sp25-hw2-jeremy-n-allison">https://github.com/cal-cs184-student/sp25-hw2-jeremy-n-allison</a>
 
 <figure>
-	<img src="teapot.png" alt="Teapot" style="width:50%"/>
-	<figcaption>You can add images with captions!</figcaption>
+	<img src="teapot after upsample.png" alt="Teapot" style="width:50%"/>
 </figure>
 
 <!--
@@ -49,10 +48,9 @@ We've already added one heading per part, to make your write-up as navigable whe
 -->
 
 <h2>Overview</h2>
-Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+In this assignment, we first explore how to construct curves both in 2D and 3D before moving on to mesh manipulation including edge flips, splits, and upsampling.
 
 <h2>Section I: Bezier Curves and Surfaces</h2>
-Bezier curves are constructed with a series of linear inertpolations
 
 <h3 id="section1">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
 Bezier curves are constructed with a series of linear interpolations (lerps) of their control points. You can imagine the control points as magnets that attract the curve, pulling it in its direction. To evaluate the control points at each step, the points are iterative over and the current point and point ahead are lerped to produce a new point. The resulting points are stored in a new array, 1 size smaller than the last. This repeats until the base case, which is when 1 point remains which is also a point on the curve.
@@ -99,8 +97,8 @@ Below is a custom curve evaluated at each step. Notice the new points created ov
 </div>
 
 <br><br>
-The <code>t</code> parameters toggles the evaluation point. Below are 3 static evaluations at different positions, and a Complimentary gif showing the smooth movement using the scroll wheel.
-<br>
+The <code>t</code> parameters toggles the evaluation point. Below are 3 static evaluations at different positions, and a complimentary gif showing the smooth movement using the scroll wheel.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -169,11 +167,12 @@ Given a vertex how can we get it's normal? One good idea is to get all the nearb
 	<img src="norm equation.png"  style="width:50%"/>
 	<figcaption>Average Normal Equation- Lecture 6</figcaption>
 </figure>
-However, we want to average the weight of the area. But why? Consider if there was one neighbor triangle that was very small but had sharp normal not aligned with the other normals. This outlier would over influence the result, thus we weigh by area to dampen these outliers.
+However, we want to average the weight of the area to help combat outliers. Consider if there was one neighbor triangle that was very small but had sharp normal not aligned with the other normals. This outlier would over influence the result, thus we weigh by area to dampen these outliers.
 
 As for implementation, we loop over every triangle face, calculate its area, and multiply it by the normal. All of these area-multiplied vectors are collected and averaged to get the final result. The before and after shows the nice shading this averaging technique produces.
 <br><br>
 As a result, the shading makes the teapot look smooth!
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -191,7 +190,7 @@ As a result, the shading makes the teapot look smooth!
 
 <h3 id="section4">Part 4: Edge flip</h3>
 To implement the edge flip we first defined and labeled all current elements which included the edges, faces, vertices, and half-edges. For the edge flip, we chose to flip in such a way that the flipping edge's half-edges were aligned correctly, thus we didn't need to modify edges at all. We then manually set all the half-edge references according to the labeled drawing to ensure everything got set correctly. Then, in a similar fashion, used each half-edge's <code>setNeighbors</code> to set up its references according to the new drawing correctly.
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -217,7 +216,7 @@ To implement the edge split we again drew out the before and after labeling each
 	<img src="Diagram Split.png"  style="width:50%"/>
 	<figcaption>Labeled Diagram After Split</figcaption>
 </figure>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -232,7 +231,7 @@ To implement the edge split we again drew out the before and after labeling each
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -254,7 +253,7 @@ To implement the edge split we again drew out the before and after labeling each
 
 <h4 id="section5.1">Extra Credit: Boundary Edge split</h3>
 Implementation of boundary was rather simple; only 1 vertex, 1 edge, 1 face, and 3 half-edges needed to be created. The strategies of reassignment was the same as part 4 & 5. See the result on the car model:
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -290,7 +289,8 @@ We follow the TA's suggested steps which are the following:
 6. Reset flags in case additional subdivisions are used.
 <br><br>
 
-The result is below. Sharp corners are radically smoothed out.
+The result is below. Sharp corners are radically smoothed out. However, the mesh can become somewhat uneven near corners which leads to the next discussion on pre-processing.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -305,9 +305,10 @@ The result is below. Sharp corners are radically smoothed out.
 		</tr>
 	</table>
 </div>
-<br><br>
 
 <h4>Cude.dae Pre-process</h4>
+Below is a cube after multiple rounds of upsampling. Notice that near the edges, the cube becomes asymmetric. This is because the cube was not symmetric to begin with; the diagonal lines prevent it from being so. This can be fixed with some splits beforehand, hence the "pre-processing" before the upsampling occurs.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -331,7 +332,8 @@ The result is below. Sharp corners are radically smoothed out.
 	</table>
 </div>
 
-TODO talk about preprocessing
+Below shows the splitting of every diagonal edge (making the mesh symmetric) of the cube and then upsampling. Notice it remains symmetric after the upsampling!
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -354,7 +356,7 @@ TODO talk about preprocessing
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <figure>
 	<img src="cube yes 4 front view.png"  style="width:50%"/>
 	<figcaption>Pre-process Upsample 3 front view</figcaption>
@@ -367,7 +369,7 @@ We used break points as discussed previously, however, the subdivision actually 
 To allow boundry split, we we first check if the vertex was on a boundry, if so find its 2 neighbor's vertice and apply the equation found in the resource for the newPosition:
 <br><br>
 <code>v->newPosition = 0.75 * v->position + 0.125 * (boundaryNeighbor1 + boundaryNeighbor2);</code>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
