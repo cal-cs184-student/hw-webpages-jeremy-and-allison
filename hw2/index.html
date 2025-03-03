@@ -195,22 +195,12 @@ To implement the edge flip we first defined and labeled all current elements whi
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
-		<td style="text-align: center;">
-			<img src="TODO.png" width="400px"/>
-			<figcaption>Before Flip</figcaption>
-		</td>
-		<td style="text-align: center;">
-			<img src="TODO.png" width="400px"/>
-			<figcaption>After Flip</figcaption>
-		</td>
-		</tr>
-		<tr>
 			<td style="text-align: center;">
-				<img src="TODO.png" width="400px"/>
+				<img src="Before flips.png" width="400px"/>
 				<figcaption>Teapot Before Flips</figcaption>
 			</td>
 			<td style="text-align: center;">
-				<img src="TODO.png" width="400px"/>
+				<img src="After flips.png" width="400px"/>
 				<figcaption>Teapot After Flips</figcaption>
 			</td>
 		</tr>
@@ -223,30 +213,40 @@ We initially had an issue where flipping did work, however it would leave a hole
 <h3 id="section5">Part 5: Edge split</h3>
 To implement the edge split we again drew out the before and after labeling each component. We created 1 vertex, 2 faces, 3 edges, and 6 new half-edges. Then reassigned according to the drawing and debugged with breakpoints.
 
+<figure>
+	<img src="Diagram Split.png"  style="width:50%"/>
+	<figcaption>Labeled Diagram After Split</figcaption>
+</figure>
+
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
-		<td style="text-align: center;">
-			<img src="TODO.png" width="400px"/>
-			<figcaption>Before Split</figcaption>
-		</td>
-		<td style="text-align: center;">
-			<img src="TODO.png" width="400px"/>
-			<figcaption>After Split</figcaption>
-		</td>
-		</tr>
-		<tr>
 			<td style="text-align: center;">
-				<img src="TODO.png" width="400px"/>
+				<img src="before splits.png" width="400px"/>
 				<figcaption>Teapot Before Splits</figcaption>
 			</td>
 			<td style="text-align: center;">
-				<img src="TODO.png" width="400px"/>
+				<img src="splits.png" width="400px"/>
 				<figcaption>Teapot After Splits</figcaption>
 			</td>
+		</tr>
+	</table>
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
 			<td style="text-align: center;">
-				<img src="TODO.png" width="400px"/>
-				<figcaption>Teapot After Splits & Flips</figcaption>
+				<img src="flips then.png" width="400px"/>
+				<figcaption>Teapot With Flips</figcaption>
+			</td>
+			<td style="text-align: center;">
+				<img src="flips then splits then.png" width="400px"/>
+				<figcaption>Teapot With Flips then Splits</figcaption>
+			</td>
+			<td style="text-align: center;">
+				<img src="flips then splits then flips.png" width="400px"/>
+				<figcaption>Teapot With Flips then Splits then Flips</figcaption>
 			</td>
 		</tr>
 	</table>
@@ -383,8 +383,8 @@ To allow boundry split, we we first check if the vertex was on a boundry, if so 
 	</table>
 </div>
 
-<h2>Use of AI (The same as HW 1)</h2>
-Team member Jeremy used ChatGPT o3-mini-high to quiz his knowledge on HW1 topics, learn new C++ syntax, and debugging. He did not use it for any report writing.
+<h2>Use of AI (The Same as HW 1)</h2>
+Team member Jeremy used ChatGPT o3-mini-high to quiz his knowledge on HW2 topics, learn new C++ syntax, and debugging. He did not use it for any report writing.
 
 <h3>What Did You Learn? (Jeremy)</h3>
 GPT is great at summarizing ideas and ensuring you understand the HW concepts clearly. For example, I would explain what bilinear is in my own words and ask GPT if I had any misconceptions. At various times I'd get stuck with some C++ debugging and GPT is able to read the error log and give some ideas as to what might be wrong. I've found it can explain syntax better and faster than the docs, for example, I didn't know what the keyword auto& was doing with the mipmap.
