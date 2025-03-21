@@ -44,7 +44,7 @@ We've already added one heading per part, to make your write-up as navigable whe
 -->
 
 <h2>Overview</h2>
-In this homework we learn about realistic lighting via race tracing and different methods of sampling to achieve better quality. We explore methods like BVH to speed up our rendering and adaptive sampling to produce noise free images. Finally, we achieve visual richness by recursively collecting light from bounces.
+In this homework we learn about realistic lighting via ray tracing and different methods of sampling to achieve better quality. We explore methods like BVH to speed up our rendering and adaptive sampling to produce noise free images. Finally, we achieve visual richness by recursively collecting light from bounces.
 
 <h2>Part 1: Ray Generation and Scene Intersection</h2>
 Ray generation starts on the image plane where we generate some number of rays per pixel to determine the pixel value. But how do you shoot a ray from a pixel into the 3D camera space? Given the pixel coordinates some math can be applied to find the equivalent sensor location on the camera. Finally, the direction of the ray can be calculated by finding the vector of the camera origin to the sensor value. With that, a valid ray can be formed!
