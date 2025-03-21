@@ -50,6 +50,16 @@ In this homework we learn about realistic lighting via race tracing and differen
 <h2>Part 1: Ray Generation and Scene Intersection</h2>
 Ray generation starts on the image plane where we generate some number of rays per pixel to determine the pixel value. But how do you shoot a ray from a pixel into the 3D camera space? Given the pixel coordinates some math can be applied to find the equivalent sensor location on the camera. Finally, the direction of the ray can be calculated by finding the vector of the camera origin to the sensor value. With that, a valid ray can be formed!
 <br><br>
+<code>
+	rad_hFov = hFov * M_PI / 180.0; <br>
+    rad_vFov = vFov * M_PI / 180.0;<br>
+    sensor_x = -tan(rad_hFov/2) + x*(2*tan(rad_hFov/2));<br>
+    sensor_y = -tan(rad_vFov/2) + y*(2*tan(rad_vFov/2));<br>
+    d = Vector3D(sensor_x, sensor_y, -1);<br>
+    d.normalize();<br>
+</code>
+
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -61,7 +71,7 @@ Ray generation starts on the image plane where we generate some number of rays p
 	</table>
 </div>
 <br><br>
-To know if a ray hits anything, all scene objects must be looped over and test in their specific way if the ray intersects. For triangles Moller-Trumbore can be used where after you calculate the edges and points shifted in barycentric coordinates the parameters <code>t, b1, and b2</code>. So long as the following conditions are true there is a valid intersection at <code>t</code>!
+To know if a ray hits anything, all scene objects must be looped over and test in their specific way if the ray intersects. For triangles Moller-Trumbore can be used where after you calculate the edges and points shifted in barycentric coordinates, the parameters <code>t, b1, and b2</code> can be calculated. So long as the following conditions are true there is a valid intersection at <code>t</code>!
 <br>
 <code>t >= 0</code><br>
 <code>0 <= b1</code><br>
@@ -94,7 +104,7 @@ As a result the following images can be rendered!
 <h2>Part 2: Bounding Volume Hierarchy</h2>
 BVH construction starts with a box that encompasses all the primitives tightly. Then a quick check is made to see if the number of primitives is equal to or less than the <code>max_leaf_size</code>, if so the node is complete and returned. Otherwise, it is split on a heuristic and recursively called on the resulting 2 halves. The heuristic we chose was splitting on the largest spread defined by <code>bbox.max - bbox.min</code> and splitting on the average centroid of the primitives.
 <br><br>
-As a result, the BVH scenes with tons of geometry could now be rendered blazingly fast. Maxplanck who has 10s of thousands of triangles saw a  __ and CBlucy who has 100s of thousands of triangles saw __. This shows that BVH becomes increasingly more useful as the geometry gets more and more complex.
+As a result, the BVH scenes with tons of geometry could now be rendered blazingly fast. Maxplanck who has 10s of thousands of triangles saw a ~300x speed-up and CBlucy who has 100s of thousands of triangles saw ~570x speed-up. This shows that BVH becomes increasingly more useful as the geometry gets more and more complex.
 <br><br>
 Before/After
 Cow.dae: 37s / 0.5s <br>
@@ -117,7 +127,7 @@ CBlucy.dae: 24m 50s / 2.6s <br>
 </div>
 
 <h2>Part 3: Direct Illumination</h2>
-Direct lighting includes 0 bounce which is light that directly comes from the light source to the camera and 1 bounce which as the name implies all the light that bounces once off the scene into the camera. The first way this is implemented is via uniform hemisphere lighting, where a light ray hits a point in the scene and some sample test bounce rays are uniformly shot out and see if they intersect a light. If so, the light is contributed to the ray hit, if not no contribution. This immediately causes issues when you don't sample enough as it's possible to never hit a light even though the light would reach the point. This causes a lot of noise, which leads us to the solution of importance sampling.
+Direct lighting includes 0 bounce which is light that directly comes from the light source to the camera and 1 bounce, which as the name implies, all the light that bounces once off the scene into the camera. The first way this is implemented is via uniform hemisphere lighting, where a light ray hits a point in the scene and some number of sample test bounce rays are uniformly shot out and see if they intersect a light. If so, the light is contributed to the ray hit, if not no contribution. This immediately causes issues when you don't sample enough as it's possible to never hit a light even though the light would reach the point. This causes a lot of noise, which leads us to the solution of importance sampling.
 <br><br>
 By knowing where the lights are in the scene we can choose to sample only in that direction with shadow rays. If the shadow-ray hits the light it contributes, if a different object than the light, it contributes no light. These samples are averaged which provides a nice smooth soft shadow and greatly reduces noise by reducing the chance of light never being samples.
 <br><br>
@@ -186,7 +196,7 @@ Below compares hemisphere and importance sampling. The first set of images shows
 </div>
 
 <h2>Part 4: Global Illumination</h2>
-Indirect lighting is a continuation of part 3 where now we integrate 2+ bounces of light with the aim of getting visual richness. To do this the <code>at_least_one_bounce_radiance</code> was modified to be recursive so it would accumulate light every bounce. With every bounce, the ray's depth tracker would increment down (who started at <code>max_ray_depth</code>) until it reached 0 which was the base case, and returned out. This was the formula to figure out the bounce contribution:
+Indirect lighting is a continuation of part 3 where now we integrate 2nd and beyond bounces of light with the aim of getting visual richness. To do this the <code>at_least_one_bounce_radiance</code> was modified to be recursive so it would accumulate light every bounce. With every bounce, the ray's depth tracker would increment down (who started at <code>max_ray_depth</code>) until it reached 0 which was the base case, and returned out. This was the formula to figure out the bounce contribution:
 <br><br>
 <code>indirect_contribution = bsdf_val * indirect_radiance * (cos_theta/pdf);</code>
 <br><br>
@@ -295,7 +305,7 @@ Below are the accumulated and unaccumulated (light from a specific bounce) of th
 </div>
 <br><br>
 <h3>Russian Roulette</h3>
-We opted to use 30% chance of termination.
+We opted to use 30% chance of termination. When checking the ray depth to see if the recursion should end, we also used the helper function to have a 30% chance of termination. This allows for unbias sampling.
 <br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -369,18 +379,18 @@ We opted to use 30% chance of termination.
 </div>
 
 <h2>Part 5: Adaptive Sampling</h2>
-Rendering can be very noise-dependent on the number of samples we choose per pixel. However, when a pixel is no longer changing much from the additional sample, there will be no more noise, and is safe to move on. Adaptive sampling achieves this by creating a confidence interval and tracking the mean and variance of a pixel. Once within the 95% confidence zone, the pixel is complete.
+Rendering can be very noisey depending on the number of samples we choose per pixel. However, when a pixel is no longer changing much from the additional sample, there will be no more noise, and is safe to move on. Adaptive sampling achieves this by creating a confidence interval and tracking the mean and variance of a pixel. Once within the 95% confidence zone, the pixel is complete.
 <br><br>
 To implement this in code the loop inside <code>raytrace_pixel</code> was modified to track the mean and variance and the interval progress was checked every batch number (a parameter). Once it passed this formula, the pixel was complete:
 <br><br>
 <code>
-mean = s1/n;
-var = (s2 - (s1 * s1) / n) / (n - 1);
-I = 1.96 * (sqrt(var) / sqrt(n));
-if(I <= maxTolerance * mean)
-{
- break;
-}
+mean = s1/n; <br>
+var = (s2 - (s1 * s1) / n) / (n - 1);<br>
+I = 1.96 * (sqrt(var) / sqrt(n));<br>
+if(I <= maxTolerance * mean)<br>
+{<br>
+ break;<br>
+}<br>
 </code>
 <br><br>
 The rate and noise-free images can be seen below. Notice the number of samples needed for convergence changes a lot throughout the scene. For example, the walls were quite stable, but the complex geometry of the bunny took longer to converge.
