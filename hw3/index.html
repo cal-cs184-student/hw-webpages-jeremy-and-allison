@@ -28,7 +28,7 @@
 <body>
 <div class="container">
 <h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-<div style="text-align: center;">Names: </div>
+<div style="text-align: center;">Names: Jeremy Fischer and Allison Dana</div>
 
 <br>
 
@@ -97,9 +97,9 @@ BVH construction starts with a box that encompasses all the primitives tightly. 
 As a result, the BVH scenes with tons of geometry could now be rendered blazingly fast. Maxplanck who has 10s of thousands of triangles saw a  __ and CBlucy who has 100s of thousands of triangles saw __. This shows that BVH becomes increasingly more useful as the geometry gets more and more complex.
 <br><br>
 Before/After
-Cow.dae: /
-Maxplanck.dae: /
-CBlucy.dae: /
+Cow.dae: 37s / 0.5s <br>
+Maxplanck.dae: 7m 5s / 1.4s <br>
+CBlucy.dae: 24m 50s / 2.6s <br>
 <br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -369,7 +369,7 @@ We opted to use 30% chance of termination.
 </div>
 
 <h2>Part 5: Adaptive Sampling</h2>
-Rendering can be very noise-dependent on the number of samples we choose per pixel. However, when a pixel is no longer changing much from the additional sample, there will be no more noise, and is safe to move on. Adaptive sampling achieves this by creating a confidence interval and tracking the mean and varience of a pixel. Once within the 95% confidence zone, the pixel is complete.
+Rendering can be very noise-dependent on the number of samples we choose per pixel. However, when a pixel is no longer changing much from the additional sample, there will be no more noise, and is safe to move on. Adaptive sampling achieves this by creating a confidence interval and tracking the mean and variance of a pixel. Once within the 95% confidence zone, the pixel is complete.
 <br><br>
 To implement this in code the loop inside <code>raytrace_pixel</code> was modified to track the mean and variance and the interval progress was checked every batch number (a parameter). Once it passed this formula, the pixel was complete:
 <br><br>
