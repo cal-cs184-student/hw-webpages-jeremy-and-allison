@@ -45,11 +45,11 @@ We've already added one heading per part, to make your write-up as navigable whe
 -->
 
 <h2>Overview</h2>
-Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+In this homework we learn about realistic lighting via race tracing and different methods of sampling to achieve better quality. We explore methods like BVH to speed up our rendering and adaptive sampling to produce noise free images. Finally, we achieve visual richness by recursively collecting light from bounces.
 
 <h2>Part 1: Ray Generation and Scene Intersection</h2>
 Ray generation starts on the image plane where we generate some number of rays per pixel to determine the pixel value. But how do you shoot a ray from a pixel into the 3D camera space? Given the pixel coordinates some math can be applied to find the equivalent sensor location on the camera. Finally, the direction of the ray can be calculated by finding the vector of the camera origin to the sensor value. With that, a valid ray can be formed!
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -60,16 +60,18 @@ Ray generation starts on the image plane where we generate some number of rays p
 		</tr>
 	</table>
 </div>
-
+<br><br>
 To know if a ray hits anything, all scene objects must be looped over and test in their specific way if the ray intersects. For triangles Moller-Trumbore can be used where after you calculate the edges and points shifted in barycentric coordinates the parameters <code>t, b1, and b2</code>. So long as the following conditions are true there is a valid intersection at <code>t</code>!
-<code>t >= 0</code>
-<code>0 <= b1</code>
-<code>0 <= b2 <= 1</code>
-<code>0 <= 1 - b1 - b2 <= 1</code>
-
+<br>
+<code>t >= 0</code><br>
+<code>0 <= b1</code><br>
+<code>0 <= b2 <= 1</code><br>
+<code>0 <= 1 - b1 - b2 <= 1</code><br>
+<br><br>
 Data like normal and BSDF is saved to the ray if there is an intersection so the ray can report what color it contributed to the pixel. Since the ray might be tested against other primitives, the <code>t</code> of which the intersection happened is saved so only the closest object intersection is saved. 
-
+<br><br>
 As a result the following images can be rendered!
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -91,14 +93,14 @@ As a result the following images can be rendered!
 
 <h2>Part 2: Bounding Volume Hierarchy</h2>
 BVH construction starts with a box that encompasses all the primitives tightly. Then a quick check is made to see if the number of primitives is equal to or less than the <code>max_leaf_size</code>, if so the node is complete and returned. Otherwise, it is split on a heuristic and recursively called on the resulting 2 halves. The heuristic we chose was splitting on the largest spread defined by <code>bbox.max - bbox.min</code> and splitting on the average centroid of the primitives.
-
+<br><br>
 As a result, the BVH scenes with tons of geometry could now be rendered blazingly fast. Maxplanck who has 10s of thousands of triangles saw a  __ and CBlucy who has 100s of thousands of triangles saw __. This shows that BVH becomes increasingly more useful as the geometry gets more and more complex.
-
+<br><br>
 Before/After
 Cow.dae: /
 Maxplanck.dae: /
 CBlucy.dae: /
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -116,15 +118,15 @@ CBlucy.dae: /
 
 <h2>Part 3: Direct Illumination</h2>
 Direct lighting includes 0 bounce which is light that directly comes from the light source to the camera and 1 bounce which as the name implies all the light that bounces once off the scene into the camera. The first way this is implemented is via uniform hemisphere lighting, where a light ray hits a point in the scene and some sample test bounce rays are uniformly shot out and see if they intersect a light. If so, the light is contributed to the ray hit, if not no contribution. This immediately causes issues when you don't sample enough as it's possible to never hit a light even though the light would reach the point. This causes a lot of noise, which leads us to the solution of importance sampling.
-
+<br><br>
 By knowing where the lights are in the scene we can choose to sample only in that direction with shadow rays. If the shadow-ray hits the light it contributes, if a different object than the light, it contributes no light. These samples are averaged which provides a nice smooth soft shadow and greatly reduces noise by reducing the chance of light never being samples.
-
+<br><br>
 <h3>Code Implementation</h3>
 In code, hemisphere sampling is implemented by a loop of <code>num_samples</code> which is the number of lights times light sampling rate parameter. In each iteration, we sample via hemisphere a ray direction and use the point hit as the origin. If the ray hits, we add to the light output using the BSDF and emission weighted by cos theta divided by the PDF. The light is divided by the number of samples at the end so it is averaged. For importance sampling, the only difference is we instead loop over the lights in the scene and cast some number of shadow rays directly toward the light.
-
+<br><br>
 <h3>Result</h3>
 Below compares hemisphere and importance sampling. The first set of images shows varying sampling amounts while keeping the light sample fixed at 1. Immediately importance sampling can produce a fairly good image with only 1 sample while hemisphere sampling is nearly black from missing the light. The next set of images of the dragon shows a varying number of light samples. The crevices of the dragon produce shadows that are way too dark when only sampling 1 light. However, as the number of samples reaches 64 there is a nice soft shadow that isn't so binary. In summary, importance sampling can get better results with fewer samples and can create soft shadows so long as there is enough light sampling.
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -142,7 +144,7 @@ Below compares hemisphere and importance sampling. The first set of images shows
 		</td>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -160,7 +162,7 @@ Below compares hemisphere and importance sampling. The first set of images shows
 		</td>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -184,40 +186,48 @@ Below compares hemisphere and importance sampling. The first set of images shows
 </div>
 
 <h2>Part 4: Global Illumination</h2>
+Indirect lighting is a continuation of part 3 where now we integrate 2+ bounces of light with the aim of getting visual richness. To do this the <code>at_least_one_bounce_radiance</code> was modified to be recursive so it would accumulate light every bounce. With every bounce, the ray's depth tracker would increment down (who started at <code>max_ray_depth</code>) until it reached 0 which was the base case, and returned out. This was the formula to figure out the bounce contribution:
+<br><br>
+<code>indirect_contribution = bsdf_val * indirect_radiance * (cos_theta/pdf);</code>
+<br><br>
+Inside <code>est_radiance_global_illumination</code> both the 0 bounce and recursive call added together produced the final result of global illumination!
+<br><br>
 
-Global (Both Direct and Indirect)
+<h3>Global Illumination (Both Direct and Indirect)</h3>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src=".png" width="400px"/>
-			<figcaption>Bunny -m 3 -l 64 -s 1024</figcaption>
+			<img src="Part4_spheres_s1024_l16_m5.png" width="400px"/>
+			<figcaption>Spheres -m 5 -l 16 -s 1024</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src=".png" width="400px"/>
-			<figcaption>Bunny -m 4 -l 64 -s 1024</figcaption>
+			<img src="Part4_bench_s1024_l16_m5.png" width="400px"/>
+			<figcaption>Bench -m 5 -l 16 -s 1024</figcaption>
 		</td>
 	</tr>
 	</table>
 </div>
 
-Only Direct and Only 
+<h3>Only Direct vs Only Indirect</h3>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src=".png" width="400px"/>
-			<figcaption>Bunny -m 3 -l 64 -s 1024</figcaption>
+			<img src="Part4_spheres_s1024_l1_m1_direct.png" width="400px"/>
+			<figcaption>Spheres -m 1 -l 1 -s 1024</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src=".png" width="400px"/>
-			<figcaption>Bunny -m 4 -l 64 -s 1024</figcaption>
+			<img src="Part4_spheres_s1024_l1_m1_indirect.png" width="400px"/>
+			<figcaption>Spheres -m 5 -l 1 -s 1024. Note the code was edited to ignore bounce 0 and 1.</figcaption>
 		</td>
 	</tr>
 	</table>
 </div>
 
-Accumulate vs Unaccumulate
+<h3>Accumulate vs Unaccumulate</h3>
+Below are the accumulated and unaccumulated (light from a specific bounce) of the bunny scene. For the accumulated, notice that the 2nd bounce of light allows the ceiling to be lit up that is otherwise unreachable from 1 bounce. With 3 bounces and above you can start to see the smooth color bleed from the wall into the wall and rabbit adding much visual richness to the otherwise plain colors. You can observe where this effect is coming from by looking at the unaccumulated versions of the image.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -250,7 +260,7 @@ Accumulate vs Unaccumulate
 	</tr>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -283,8 +293,10 @@ Accumulate vs Unaccumulate
 	</tr>
 	</table>
 </div>
-
-Russian Roulette
+<br><br>
+<h3>Russian Roulette</h3>
+We opted to use 30% chance of termination.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -317,8 +329,8 @@ Russian Roulette
 	</tr>
 	</table>
 </div>
-
-Various sample-per-pixel rate with fixed 4 ray sampling.
+<br><br>
+<h3>Various sample-per-pixel rate with fixed 4 ray sampling.</h3>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -357,6 +369,22 @@ Various sample-per-pixel rate with fixed 4 ray sampling.
 </div>
 
 <h2>Part 5: Adaptive Sampling</h2>
+Rendering can be very noise-dependent on the number of samples we choose per pixel. However, when a pixel is no longer changing much from the additional sample, there will be no more noise, and is safe to move on. Adaptive sampling achieves this by creating a confidence interval and tracking the mean and varience of a pixel. Once within the 95% confidence zone, the pixel is complete.
+<br><br>
+To implement this in code the loop inside <code>raytrace_pixel</code> was modified to track the mean and variance and the interval progress was checked every batch number (a parameter). Once it passed this formula, the pixel was complete:
+<br><br>
+<code>
+mean = s1/n;
+var = (s2 - (s1 * s1) / n) / (n - 1);
+I = 1.96 * (sqrt(var) / sqrt(n));
+if(I <= maxTolerance * mean)
+{
+ break;
+}
+</code>
+<br><br>
+The rate and noise-free images can be seen below. Notice the number of samples needed for convergence changes a lot throughout the scene. For example, the walls were quite stable, but the complex geometry of the bunny took longer to converge.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
