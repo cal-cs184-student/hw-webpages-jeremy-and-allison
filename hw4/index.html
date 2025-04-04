@@ -47,8 +47,13 @@ We've already added one heading per part, to make your write-up as navigable whe
 -->
 
 <h2>Overview</h2>
+In this assignment, we explore introductory physics simulation strategies to create a convincing cloth simulation. First, we implement point masses, connect them with springs, and move them with Verlet integration. Next, we handle a collision with external objects and the cloth itself. To ensure the simulation can be run in real time we implement a spatial map to avoid the naive solution of checking every other point mass. Finally, we learn how to implement shaders to create engaging lighting, bump, and displacement effects on our objects.
 
 <h2>Part 1: Masses and springs</h2>
+The first task is creating a cloth mesh by creating point masses in a grid structure and connecting them with spring constraints. The constraints are defined as:
+-Structure: Connection to left point mass and one above it.
+-Shearing: Connection to diagonal upper left and diagonal upper right.
+-Bending: Connection to two away to its left and two away above.
 
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -70,6 +75,12 @@ We've already added one heading per part, to make your write-up as navigable whe
 </div>
 
 <h2>Part 2: Simulation via numerical integration</h2>
+With the grid complete, external forces were applied to the point masses like gravity and spring correction forces. The movement of the point masses was complete with verlet integration and to prevent deformation, the 10% rule was implemented from the SIGGRAPH paper. As a result the cloth can be seen flowing wit default parameters
+
+<b>TA's the following are gifs, please look on the website. Gifs are better at showcasing the behavior than images.
+	https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw4/index.html
+</b>
+
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -80,6 +91,39 @@ We've already added one heading per part, to make your write-up as navigable whe
 		<tr>
 	</table>
 </div>
+
+The effect of changing the spring constant <code>ks</code> can be seen below. The lower value results in a "smoother" or "flatter" mesh, whereas the higher value results in a much more wrinkle mesh throughout the simulation.
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="Part 2 low ks 100.gif" width="400px"/>
+			<figcaption>ks 100</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="Part 2 high ks 10k.gif" width="400px"/>
+			<figcaption>ks 10k</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+
+The effect of changing the density can be seen below. A higher density leads to a similar effect of low ks, the cloth is dragged down by the weight leading to so a smoother mesh. With less density and weight the cloth is more wrinkly. This intuitively makes sense, as a heavy dense blanket will rest flat and smooth, whereas a less dense cloth will have more wrinkles from being less stretched out from the weight.
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="Part 2 Low Density 5.gif" width="400px"/>
+			<figcaption>Density 5</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="Part 2 High Density 1000.gif" width="400px"/>
+			<figcaption>Density 1000</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+
 
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -96,36 +140,7 @@ We've already added one heading per part, to make your write-up as navigable whe
 	</table>
 </div>
 
-<div style="display: flex; flex-direction: column; align-items: center;">
-	<table style="width: 100%; text-align: center; border-collapse: collapse;">
-		<tr>
-		<td style="text-align: center;">
-			<img src="Part 2 Low Density 5.gif" width="400px"/>
-			<figcaption>Density 5</figcaption>
-		</td>
-		<td style="text-align: center;">
-			<img src="Part 2 High Density 1000.gif" width="400px"/>
-			<figcaption>Density 1000</figcaption>
-		</td>
-		</tr>
-	</table>
-</div>
-
-<div style="display: flex; flex-direction: column; align-items: center;">
-	<table style="width: 100%; text-align: center; border-collapse: collapse;">
-		<tr>
-		<td style="text-align: center;">
-			<img src="Part 2 low ks 100.gif" width="400px"/>
-			<figcaption>ks 100</figcaption>
-		</td>
-		<td style="text-align: center;">
-			<img src="Part 2 high ks 10k.gif" width="400px"/>
-			<figcaption>ks 10k</figcaption>
-		</td>
-		</tr>
-	</table>
-</div>
-
+The final resting position of pinned4.json can be seen below, both the wire frame and a future shader from part 5.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
