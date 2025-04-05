@@ -92,7 +92,7 @@ With the grid complete, external forces were applied to the point masses like gr
 	</table>
 </div>
 
-The effect of changing the spring constant <code>ks</code> can be seen below. The lower value results in a "smoother" or "flatter" mesh, whereas the higher value results in a much more wrinkle mesh throughout the simulation.
+The effect of changing the spring constant <code>ks</code> can be seen below. The value controls the stiffness of the cloth, with higher values resulting in fewer wrinkles.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -108,7 +108,7 @@ The effect of changing the spring constant <code>ks</code> can be seen below. Th
 	</table>
 </div>
 
-The effect of changing the density can be seen below. A higher density leads to a similar effect of low ks, the cloth is dragged down by the weight leading to so a smoother mesh. With less density and weight the cloth is more wrinkly. This intuitively makes sense, as a heavy dense blanket will rest flat and smooth, whereas a less dense cloth will have more wrinkles from being less stretched out from the weight.
+The effect of changing the density can be seen below. A higher density leads to a similar effect of low ks, the cloth is dragged down by the weight creating wrinkles. With less density, the lower half of the cloth tugs on the upper half less leading to fewer wrinkles.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -140,7 +140,7 @@ The effect of changing the damping can be seen below. The extreme of 100% damp s
 	</table>
 </div>
 
-The final resting position of pinned4.json can be seen below, both the wire frame and a future shader from part 5.
+The final resting position of pinned4.json can be seen below, both the wire frame and shaded.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -163,7 +163,7 @@ Collision math was implemented to handle collisions with spheres and planes. For
 
 The correction is simply the difference between the intersection and the last position. The actual correction applied is scaled down by a friction parameter.  
 
-The result of the sphere collisions can be seen below. With very low <code>ks</code> the cloth is smooth and very high <code>ks</code> the cloth clings the the sphere and is more stiff.
+The result of the sphere collisions can be seen below. With very low <code>ks</code> the cloth is less stiff and drapes and with very high <code>ks</code> the cloth clings the the sphere and is stiffer.
 
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -183,6 +183,8 @@ The result of the sphere collisions can be seen below. With very low <code>ks</c
 		</tr>
 	</table>
 </div>
+
+For planes, the steps are the same as the sphere but the intersection math is different. We check if the trajectory goes through the plane by checking if the dot product flips signs (as 0 is particular/on the plane). If so we apply a correction vector. As a result, the cloth can be seen lying on the plane.
 
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
