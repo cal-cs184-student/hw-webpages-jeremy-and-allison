@@ -237,6 +237,10 @@ The effect of raising the ks, or stiffness, can be seen below. The cloth resiste
 </div>
 
 <h2>Part 5: Shaders</h2>
+A shader is code that runs on the GPU to control how objects are drawn to the screen. The vertex shader runs first, where it processes every vertex of a mesh and decides where it should appear on the screen. The fragment shader runs for each pixel that makes up the surface of an object and decides the color based on material, texture, and lighting. Together, the vertex and fragment shader give you complete control over how to display an object.
+
+First, we start by creating the Blinn-Phong shading model, which is composed of three parts: diffuse, specular, and ambient lighting. Diffuse is the direct one-bounce lighting on the object from all the light sources in the scene. The specular "highlight" is the result of light reflecting toward the camera, depending on the angle between the light, surface normal, and camera providing a shiny effect. Finally, for ambient—since ray tracing bounces is expensive—we add a small constant of light so areas not lit up from diffuse or specular aren't abnormally dark.
+
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -260,7 +264,7 @@ The effect of raising the ks, or stiffness, can be seen below. The cloth resiste
 		</td>
 		<td style="text-align: center;">
 			<img src="Part 5 Amb.png" width="400px"/>
-			<figcaption>Ambience</figcaption>
+			<figcaption>Ambient</figcaption>
 		</td>
 		</tr>
 	</table>
@@ -281,6 +285,7 @@ The effect of raising the ks, or stiffness, can be seen below. The cloth resiste
 	</table>
 </div>
 
+Bump mapping fakes surface detail by adjusting the lighting normals, but the actual mesh shape stays the same. Displacement mapping physically moves the mesh vertices based on the texture, changing the object's real geometry. Bump is cheap and fast, while displacement gives true depth but needs a high-res mesh to look good. See major the difference when the resolution is increased from 16 -> 128 below.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -289,8 +294,16 @@ The effect of raising the ks, or stiffness, can be seen below. The cloth resiste
 			<figcaption>Bump normal:2 height:0.3 -o16 -a16</figcaption>
 		</td>
 		<td style="text-align: center;">
+			<img src="Part 5 cloth bump.png" width="400px"/>
+			<figcaption>Bump (cloth) normal:2 height:0.3 -o16 -a16</figcaption>
+		</td>
+		<td style="text-align: center;">
 			<img src="Part 5 Bump normal 2 height dot3 -o128 -a128.png" width="400px"/>
 			<figcaption>Bump normal:2 height:0.3 -o128 -a128</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="Part 5 bump cloth higher.png" width="400px"/>
+			<figcaption>Bump (cloth) normal:2 height:0.3 -o128 -a128</figcaption>
 		</td>
 		</tr>
 	</table>
@@ -321,6 +334,9 @@ The effect of raising the ks, or stiffness, can be seen below. The cloth resiste
 		</tr>
 	</table>
 </div>
+
+<h2>Extra Credit - Fresnel Rim Lighting</h2>
+This shader computes the view direction from each fragment to the camera and compares it to the surface normal. By subtracting the dot product of these two vectors from one and raising the result to a configurable exponent, it produces a value that increases at glancing angles. This value, multiplied by some arbitrary scale factor, is used to blend between a base color and a rim color, creating a glowing edge that emphasizes the object's silhouette! 
 
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
