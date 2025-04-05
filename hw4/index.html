@@ -97,11 +97,11 @@ The effect of changing the spring constant <code>ks</code> can be seen below. Th
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="Part 2 low ks 100.gif" width="400px"/>
-			<figcaption>ks 100</figcaption>
+			<img src="Part 2 ks 500.gif" width="400px"/>
+			<figcaption>ks 500</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="Part 2 high ks 10k.gif" width="400px"/>
+			<img src="Part 2 ks 10k.gif" width="400px"/>
 			<figcaption>ks 10k</figcaption>
 		</td>
 		</tr>
@@ -113,18 +113,18 @@ The effect of changing the density can be seen below. A higher density leads to 
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="Part 2 Low Density 5.gif" width="400px"/>
+			<img src="Part 2 density 5.gif" width="400px"/>
 			<figcaption>Density 5</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="Part 2 High Density 1000.gif" width="400px"/>
+			<img src="Part 2 density 1000.gif" width="400px"/>
 			<figcaption>Density 1000</figcaption>
 		</td>
 		</tr>
 	</table>
 </div>
 
-
+The effect of changing the damping can be seen below. The extreme of 100% damp shows the cloth very slowly falling. The extreme of 0% damp shows the cloth flowing back and forth both ways as it fails to come to a resting stop.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -157,6 +157,14 @@ The final resting position of pinned4.json can be seen below, both the wire fram
 </div>
 
 <h2>Part 3: Handling collisions with other objects</h2>
+Collision math was implemented to handle collisions with spheres and planes. For spheres, we check if the point mass distance from the sphere center is less than the radius, if so, calculate a correction vector. To calculate the correction vector, we find the trajectory of the point mass and where it would intersect with the sphere.
+
+<code>intersection = origin + (radius/pm.(position - origin).norm()) * (pm.position - origin);</code>
+
+The correction is simply the difference between the intersection and the last position. The actual correction applied is scaled down by a friction parameter.  
+
+The result of the sphere collisions can be seen below. With very low <code>ks</code> the cloth is smooth and very high <code>ks</code> the cloth clings the the sphere and is more stiff.
+
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -176,21 +184,32 @@ The final resting position of pinned4.json can be seen below, both the wire fram
 	</table>
 </div>
 
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
+			<img src="Part 3 Rest.png" width="400px"/>
+			<figcaption></figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+
 <h2>Part 4: Handling self-collisions</h2>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="Part 4 Start.png" width="400px"/>
-			<figcaption>ks 500</figcaption>
+			<img src="Part 4 Begin.png" width="400px"/>
+			<figcaption>Begin</figcaption>
 		</td>
 		<td style="text-align: center;">
 			<img src="Part 4 Middle.png" width="400px"/>
-			<figcaption>ks 5k</figcaption>
+			<figcaption>Middle</figcaption>
 		</td>
 		<td style="text-align: center;">
 			<img src="Part 4 End.png" width="400px"/>
-			<figcaption>ks 50k</figcaption>
+			<figcaption>End</figcaption>
 		</td>
 		</tr>
 	</table>
@@ -200,16 +219,12 @@ The final resting position of pinned4.json can be seen below, both the wire fram
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
-			<img src="Part 4 High ks 50k.png" width="400px"/>
+			<img src="Part 4 ks 50k.png" width="400px"/>
 			<figcaption>ks 50k</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="Part 4 high density 100.png" width="400px"/>
-			<figcaption>Density 100%</figcaption>
-		</td>
-		<td style="text-align: center;">
-			<img src="Part 4 End.png" width="400px"/>
-			<figcaption>ks 50k</figcaption>
+			<img src="Part 4 Density 100.png" width="400px"/>
+			<figcaption>Density 100</figcaption>
 		</td>
 		</tr>
 	</table>
@@ -220,15 +235,25 @@ The final resting position of pinned4.json can be seen below, both the wire fram
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
+			<img src="Part 5 Phong.png" width="400px"/>
+			<figcaption>Phong</figcaption>
+		</td>
+		</tr>
+	</table>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center;">
+	<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		<tr>
+		<td style="text-align: center;">
 			<img src="Part 5 Diffuse.png" width="400px"/>
 			<figcaption>Diffuse</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="Part 5 Spec only.png" width="400px"/>
+			<img src="Part 5 Spec.png" width="400px"/>
 			<figcaption>Specular</figcaption>
 		</td>
 		<td style="text-align: center;">
-			<img src="Part 5 Amb only.png" width="400px"/>
+			<img src="Part 5 Amb.png" width="400px"/>
 			<figcaption>Ambience</figcaption>
 		</td>
 		</tr>
