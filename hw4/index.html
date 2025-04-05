@@ -54,7 +54,7 @@ The first task is creating a cloth mesh by creating point masses in a grid struc
 -Structure: Connection to left point mass and one above it.
 -Shearing: Connection to diagonal upper left and diagonal upper right.
 -Bending: Connection to two away to its left and two away above.
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -73,14 +73,14 @@ The first task is creating a cloth mesh by creating point masses in a grid struc
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <h2>Part 2: Simulation via numerical integration</h2>
 With the grid complete, external forces were applied to the point masses like gravity and spring correction forces. The movement of the point masses was complete with verlet integration and to prevent deformation, the 10% rule was implemented from the SIGGRAPH paper. As a result the cloth can be seen flowing wit default parameters
-
+<br><br>
 <b>TA's the following are gifs, please look on the website. Gifs are better at showcasing the behavior than images.
 	https://cal-cs184-student.github.io/hw-webpages-jeremy-and-allison/hw4/index.html
 </b>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -91,8 +91,9 @@ With the grid complete, external forces were applied to the point masses like gr
 		<tr>
 	</table>
 </div>
-
+<br><br>
 The effect of changing the spring constant <code>ks</code> can be seen below. The value controls the stiffness of the cloth, with higher values resulting in fewer wrinkles.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -107,8 +108,9 @@ The effect of changing the spring constant <code>ks</code> can be seen below. Th
 		</tr>
 	</table>
 </div>
-
+<br><br>
 The effect of changing the density can be seen below. A higher density leads to a similar effect of low ks, the cloth is dragged down by the weight creating wrinkles. With less density, the lower half of the cloth tugs on the upper half less leading to fewer wrinkles.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -124,7 +126,9 @@ The effect of changing the density can be seen below. A higher density leads to 
 	</table>
 </div>
 
+<br><br>
 The effect of changing the damping can be seen below. The extreme of 100% damp shows the cloth very slowly falling. The extreme of 0% damp shows the cloth flowing back and forth both ways as it fails to come to a resting stop.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -139,32 +143,33 @@ The effect of changing the damping can be seen below. The extreme of 100% damp s
 		</tr>
 	</table>
 </div>
-
+<br><br>
 The final resting position of pinned4.json can be seen below, both the wire frame and shaded.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
 		<td style="text-align: center;">
 			<img src="Part 2 Pinned4 Shaded.png" width="400px"/>
-			<figcaption>Density 5</figcaption>
+			<figcaption>Shaded</figcaption>
 		</td>
 		<td style="text-align: center;">
 			<img src="Part 2 Pinned4 Wire.png" width="400px"/>
-			<figcaption>Density 1000</figcaption>
+			<figcaption>Wire</figcaption>
 		</td>
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <h2>Part 3: Handling collisions with other objects</h2>
 Collision math was implemented to handle collisions with spheres and planes. For spheres, we check if the point mass distance from the sphere center is less than the radius, if so, calculate a correction vector. To calculate the correction vector, we find the trajectory of the point mass and where it would intersect with the sphere.
-
+<br><br>
 <code>intersection = origin + (radius/pm.(position - origin).norm()) * (pm.position - origin);</code>
-
+<br><br>
 The correction is simply the difference between the intersection and the last position. The actual correction applied is scaled down by a friction parameter.  
-
+<br><br>
 The result of the sphere collisions can be seen below. With very low <code>ks</code> the cloth is less stiff and drapes and with very high <code>ks</code> the cloth clings the the sphere and is stiffer.
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -183,9 +188,9 @@ The result of the sphere collisions can be seen below. With very low <code>ks</c
 		</tr>
 	</table>
 </div>
-
+<br><br>
 For planes, the steps are the same as the sphere but the intersection math is different. We check if the trajectory goes through the plane by checking if the dot product flips signs (as 0 is particular/on the plane). If so we apply a correction vector. As a result, the cloth can be seen lying on the plane.
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -196,11 +201,12 @@ For planes, the steps are the same as the sphere but the intersection math is di
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <h2>Part 4: Handling self-collisions</h2>
 To handle self-collision, we could naively check each point mass against every other point mass. However, if we could somehow only check the point masses that are nearby, it could save an order of magnitude of computation. To do this, a spatial map is constructed; a hash map that holds a vector of pointers to point masses within some volume cube. Every time step, each point mass's position is hashed and snapped into the closest volume box. This way, we don't have to brute-force create volume boxes across the entire scene, we only store volume boxes that actually have point masses. Then, when it's time to check for collisions, you only need to check against the point masses that are in the same volume box as you. Each point mass that was less than <code>2 * thickness</code> away from the current point mass had its correction vector accumulated, and the average of those was used as the final correction vector applied to the point mass.
-
+<br><br>
 The result can be seen below, with the cloth successfully not clipping through itself.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -219,8 +225,9 @@ The result can be seen below, with the cloth successfully not clipping through i
 		</tr>
 	</table>
 </div>
-
+<br><br>
 The effect of raising the ks, or stiffness, can be seen below. The cloth resisted wrinkling up and favored remaining flat and smooth. The effect of high density resulted in a cloth that quickly collapsed on it self from the weight and did not spread out quickly.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -235,12 +242,12 @@ The effect of raising the ks, or stiffness, can be seen below. The cloth resiste
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <h2>Part 5: Shaders</h2>
 A shader is code that runs on the GPU to control how objects are drawn to the screen. The vertex shader runs first, where it processes every vertex of a mesh and decides where it should appear on the screen. The fragment shader runs for each pixel that makes up the surface of an object and decides the color based on material, texture, and lighting. Together, the vertex and fragment shader give you complete control over how to display an object.
-
+<br><br>
 First, we start by creating the Blinn-Phong shading model, which is composed of three parts: diffuse, specular, and ambient lighting. Diffuse is the direct one-bounce lighting on the object from all the light sources in the scene. The specular "highlight" is the result of light reflecting toward the camera, depending on the angle between the light, surface normal, and camera providing a shiny effect. Finally, for ambient—since ray tracing bounces is expensive—we add a small constant of light so areas not lit up from diffuse or specular aren't abnormally dark.
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -269,7 +276,7 @@ First, we start by creating the Blinn-Phong shading model, which is composed of 
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -284,8 +291,9 @@ First, we start by creating the Blinn-Phong shading model, which is composed of 
 		</tr>
 	</table>
 </div>
-
+<br><br>
 Bump mapping fakes surface detail by adjusting the lighting normals, but the actual mesh shape stays the same. Displacement mapping physically moves the mesh vertices based on the texture, changing the object's real geometry. Bump is cheap and fast, while displacement gives true depth but needs a high-res mesh to look good. See major the difference when the resolution is increased from 16 -> 128 below.
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -308,7 +316,7 @@ Bump mapping fakes surface detail by adjusting the lighting normals, but the act
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -323,7 +331,7 @@ Bump mapping fakes surface detail by adjusting the lighting normals, but the act
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -334,10 +342,10 @@ Bump mapping fakes surface detail by adjusting the lighting normals, but the act
 		</tr>
 	</table>
 </div>
-
+<br><br>
 <h2>Extra Credit - Fresnel Rim Lighting</h2>
 This shader computes the view direction from each fragment to the camera and compares it to the surface normal. By subtracting the dot product of these two vectors from one and raising the result to a configurable exponent, it produces a value that increases at glancing angles. This value, multiplied by some arbitrary scale factor, is used to blend between a base color and a rim color, creating a glowing edge that emphasizes the object's silhouette! 
-
+<br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -352,8 +360,12 @@ This shader computes the view direction from each fragment to the camera and com
 		</tr>
 	</table>
 </div>
+<br><br>
+<h2>Use of AI (The Same as HW 1, 2, 3)</h2>
+Team member Jeremy used ChatGPT o3-mini-high to quiz his knowledge on HW4 topics, learn new C++ syntax, and debugging. He did not use it for any report writing.
 
-<h2>Additional Notes</h2>
+<h3>What Did You Learn? (Jeremy)</h3>
+GPT is great at summarizing ideas and ensuring you understand the HW concepts clearly. For example, I would explain what vertex vs fragment shading is in my own words and ask GPT if I had any misconceptions. At various times I'd get stuck with some C++ debugging and GPT is able to read the error log and give some ideas as to what might be wrong. I've found it can explain syntax better and faster than the docs.
 
 </div>
 </body>
