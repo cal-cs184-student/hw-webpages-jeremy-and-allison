@@ -200,6 +200,7 @@ For planes, the steps are the same as the sphere but the intersection math is di
 <h2>Part 4: Handling self-collisions</h2>
 To handle self-collision, we could naively check each point mass against every other point mass. However, if we could somehow only check the point masses that are nearby, it could save an order of magnitude of computation. To do this, a spatial map is constructed; a hash map that holds a vector of pointers to point masses within some volume cube. Every time step, each point mass's position is hashed and snapped into the closest volume box. This way, we don't have to brute-force create volume boxes across the entire scene, we only store volume boxes that actually have point masses. Then, when it's time to check for collisions, you only need to check against the point masses that are in the same volume box as you. Each point mass that was less than <code>2 * thickness</code> away from the current point mass had its correction vector accumulated, and the average of those was used as the final correction vector applied to the point mass.
 
+The result can be seen below, with the cloth successfully not clipping through itself.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
@@ -219,6 +220,7 @@ To handle self-collision, we could naively check each point mass against every o
 	</table>
 </div>
 
+The effect of raising the ks, or stiffness, can be seen below. The cloth resisted wrinkling up and favored remaining flat and smooth. The effect of high density resulted in a cloth that quickly collapsed on it self from the weight and did not spread out quickly.
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
 		<tr>
