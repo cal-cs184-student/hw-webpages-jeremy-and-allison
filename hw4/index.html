@@ -28,7 +28,7 @@
 <body>
 <div class="container">
 <h1>CS184/284A Spring 2025 Homework 4 Write-Up</h1>
-<div style="text-align: center;">Names: </div>
+<div style="text-align: center;">Names: Jeremy Fischer</div>
 
 <br>
 
@@ -51,9 +51,10 @@ In this assignment, we explore introductory physics simulation strategies to cre
 
 <h2>Part 1: Masses and springs</h2>
 The first task is creating a cloth mesh by creating point masses in a grid structure and connecting them with spring constraints. The constraints are defined as:
--Structure: Connection to left point mass and one above it.
--Shearing: Connection to diagonal upper left and diagonal upper right.
--Bending: Connection to two away to its left and two away above.
+<br>
+-Structure: Connection to left point mass and one above it.<br>
+-Shearing: Connection to diagonal upper left and diagonal upper right.<br>
+-Bending: Connection to two away to its left and two away above.<br>
 <br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -196,7 +197,11 @@ For planes, the steps are the same as the sphere but the intersection math is di
 		<tr>
 		<td style="text-align: center;">
 			<img src="Part 3 Rest.png" width="400px"/>
-			<figcaption></figcaption>
+			<figcaption>Wire</figcaption>
+		</td>
+		<td style="text-align: center;">
+			<img src="Part 3 rest shaded.png" width="400px"/>
+			<figcaption>Shaded</figcaption>
 		</td>
 		</tr>
 	</table>
@@ -226,7 +231,7 @@ The result can be seen below, with the cloth successfully not clipping through i
 	</table>
 </div>
 <br><br>
-The effect of raising the ks, or stiffness, can be seen below. The cloth resisted wrinkling up and favored remaining flat and smooth. The effect of high density resulted in a cloth that quickly collapsed on it self from the weight and did not spread out quickly.
+The effect of raising the ks, or stiffness, can be seen below. With high ks the cloth resisted wrinkling up and favored remaining flat and smooth. The effect of high density resulted in a cloth that quickly collapsed on it self from the weight and did not spread out quickly.
 <br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -292,7 +297,7 @@ First, we start by creating the Blinn-Phong shading model, which is composed of 
 	</table>
 </div>
 <br><br>
-Bump mapping fakes surface detail by adjusting the lighting normals, but the actual mesh shape stays the same. Displacement mapping physically moves the mesh vertices based on the texture, changing the object's real geometry. Bump is cheap and fast, while displacement gives true depth but needs a high-res mesh to look good. See major the difference when the resolution is increased from 16 -> 128 below.
+Bump mapping fakes surface detail by adjusting the lighting normals, but the actual mesh shape stays the same. Displacement mapping physically moves the mesh vertices based on the texture, changing the object's real geometry. Bump is cheap and fast, while displacement gives true depth but needs a high-res mesh to look good. See major the difference when the resolution is increased from 16 -> 128 below. The coarseness goes down as the resolution went up.
 <br><br>
 <div style="display: flex; flex-direction: column; align-items: center;">
 	<table style="width: 100%; text-align: center; border-collapse: collapse;">
